@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "990289816120",
+    "project_id": "vuv-azil-navigation",
+    "storage_bucket": "vuv-azil-navigation.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:990289816120:android:425d1ebb1d5d85ff1e14cd",
+        "android_client_info": {
+          "package_name": "com.activity.vuv_azil_navigation"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAn5u-K_btiGN0QbgplaEfChM6xPO16vys"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
