@@ -16,6 +16,7 @@
             android:id="@+id/rec_img"
             android:layout_width="200dp"
             android:layout_height="200dp"
+            android:scaleType="centerCrop"
             android:src="@mipmap/offers3"/>
 
         <TextView
