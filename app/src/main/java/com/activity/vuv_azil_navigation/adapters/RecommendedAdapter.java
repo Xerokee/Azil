@@ -1,6 +1,7 @@
 package com.activity.vuv_azil_navigation.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.vuv_azil_navigation.R;
+import com.activity.vuv_azil_navigation.activities.ViewAllActivity;
 import com.activity.vuv_azil_navigation.models.RecommendedModel;
 import com.bumptech.glide.Glide;
 

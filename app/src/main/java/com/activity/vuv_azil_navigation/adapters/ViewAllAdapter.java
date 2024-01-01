@@ -1,6 +1,7 @@
 package com.activity.vuv_azil_navigation.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.vuv_azil_navigation.R;
+import com.activity.vuv_azil_navigation.activities.DetailedActivity;
 import com.activity.vuv_azil_navigation.models.ViewAllModel;
 import com.bumptech.glide.Glide;
 
@@ -39,6 +41,16 @@ public class ViewAllAdapter extends RecyclerView.Adapter<ViewAllAdapter.ViewHold
         holder.description.setText(list.get(position).getDescription());
         holder.rating.setText(list.get(position).getRating());
         holder.price.setText(list.get(position).getPrice()+"/svaki");
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(context, DetailedActivity.class);
+                intent.putExtra("detail",list.get(position));
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override

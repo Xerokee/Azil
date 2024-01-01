@@ -1,6 +1,8 @@
 package com.activity.vuv_azil_navigation.models;
 
-public class ViewAllModel {
+import java.io.Serializable;
+
+public class ViewAllModel implements Serializable {
     String name;
     String description;
     String rating;

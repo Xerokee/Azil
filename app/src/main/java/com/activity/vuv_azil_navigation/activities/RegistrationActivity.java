@@ -60,7 +60,6 @@ public class RegistrationActivity extends AppCompatActivity {
 
                 createUser();
                 progressBar.setVisibility(View.VISIBLE);
-
             }
         });
     }

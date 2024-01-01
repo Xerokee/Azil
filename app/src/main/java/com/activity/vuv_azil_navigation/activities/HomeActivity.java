@@ -26,10 +26,14 @@ public class HomeActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         progressBar = findViewById(R.id.progressbar);
         progressBar.setVisibility(View.GONE);
+
         if (auth.getCurrentUser() != null){
             progressBar.setVisibility(View.VISIBLE);
             startActivity(new Intent(HomeActivity.this, MainActivity.class));
-            Toast.makeText(this, "please wait you are already logged in", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Molimo vas pričekajte, već ste prijavljeni!", Toast.LENGTH_SHORT).show();
+            finish();
+        } else {
+            startActivity(new Intent(HomeActivity.this, LoginActivity.class));
             finish();
         }
     }
@@ -42,5 +46,4 @@ public class HomeActivity extends AppCompatActivity {
 
         startActivity(new Intent(HomeActivity.this, RegistrationActivity.class));
     }
-
 }

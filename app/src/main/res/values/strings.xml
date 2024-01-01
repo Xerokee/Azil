@@ -15,8 +15,8 @@
     <string name="my_carts">My Carts</string>
     <string name="action_settings">Action Settings</string>
     <string name="nav_header_desc" />
-    <string name="nav_header_title" />
-    <string name="nav_header_subtitle" />
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="menu_gallery" />
     <string name="menu_slideshow" />
     <string name="po_etna">Početna</string>
@@ -26,4 +26,5 @@
     <string name="nove_ivotinje">Nove Životinje</string>
     <string name="moje_narud_be">Moje Narudžbe</string>
     <string name="moja_ko_arica">Moja Košarica</string>
+    <string name="opis">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</string>
 </resources>
