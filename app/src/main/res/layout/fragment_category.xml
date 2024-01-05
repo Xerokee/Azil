@@ -4,13 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.category.CategoryFragment">
-
-    <TextView
-        android:id="@+id/textView5"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Category" />
+    tools:context=".ui.category.CategoryFragment"
+    android:background="@color/white">
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_marginRight="6dp"

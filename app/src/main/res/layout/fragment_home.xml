@@ -33,6 +33,8 @@
             android:background="@drawable/search_gb"
             android:padding="13dp"
             android:hint="Pretraži svoju životinju ovdje..."
+            android:textColorHint="@color/purple_700"
+            android:textColor="@color/purple_700"
             android:drawablePadding="5dp"/>
 
         <LinearLayout
@@ -49,6 +51,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/alice"
                 android:text="Popularne životinje"
+                android:textColor="@color/purple_700"
                 android:textSize="18sp"
                 android:textStyle="bold"/>
 
@@ -86,6 +89,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/alice"
                 android:text="Istraži Životinje"
+                android:textColor="@color/purple_700"
                 android:textSize="18sp"
                 android:textStyle="bold"/>
 
@@ -123,6 +127,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/alice"
                 android:text="Predložene životinje"
+                android:textColor="@color/purple_700"
                 android:textSize="18sp"
                 android:textStyle="bold"/>
 

@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.activity.vuv_azil_navigation.MainActivity;
 import com.activity.vuv_azil_navigation.R;
 import com.activity.vuv_azil_navigation.models.UserModel;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -99,6 +100,7 @@ public class RegistrationActivity extends AppCompatActivity {
                             database.getReference().child("Korisnici").child(id).setValue(userModel);
                             progressBar.setVisibility(View.GONE);
                             Toast.makeText(RegistrationActivity.this, "Registracija je uspješna!", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
                         }
                         else{
                             progressBar.setVisibility(View.GONE);

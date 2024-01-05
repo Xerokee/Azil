@@ -33,8 +33,6 @@ public class HomeActivity extends AppCompatActivity {
             Toast.makeText(this, "Molimo vas pričekajte, već ste prijavljeni!", Toast.LENGTH_SHORT).show();
             finish();
         } else {
-            startActivity(new Intent(HomeActivity.this, LoginActivity.class));
-            finish();
         }
     }
 
