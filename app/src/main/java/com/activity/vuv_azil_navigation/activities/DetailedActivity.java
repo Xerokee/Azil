@@ -130,9 +130,9 @@ public class DetailedActivity extends AppCompatActivity {
             cartMap.put("totalQuantity", quantity.getText().toString());
             cartMap.put("totalPrice", totalPrice);
 
-            firestore.collection("AddToAdopt")
-                    .document(currentUser.getUid())
-                    .collection("CurrentUser")
+            firestore.collection("CurrentUser")
+                    .document(auth.getCurrentUser().getUid())
+                    .collection("AddToAdopt")
                     .add(cartMap)
                     .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                         @Override

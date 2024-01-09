@@ -88,5 +88,35 @@ public class ViewAllActivity extends AppCompatActivity {
                 }
             });
         }
+
+        // Dohvati Zečeve
+        if(type != null && type.equalsIgnoreCase("zec")) {
+            firestore.collection("AllAnimals").whereEqualTo("type", "zec").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                    for (DocumentSnapshot documentSnapshot : task.getResult().getDocuments()) {
+                        ViewAllModel viewAllModel = documentSnapshot.toObject(ViewAllModel.class);
+                        viewAllModelList.add(viewAllModel);
+                        viewAllAdapter.notifyDataSetChanged();
+                    }
+                }
+            });
+        }
+
+        // Dohvati Papige
+        if(type != null && type.equalsIgnoreCase("papiga")) {
+            firestore.collection("AllAnimals").whereEqualTo("type", "papiga").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                    for (DocumentSnapshot documentSnapshot : task.getResult().getDocuments()) {
+                        ViewAllModel viewAllModel = documentSnapshot.toObject(ViewAllModel.class);
+                        viewAllModelList.add(viewAllModel);
+                        viewAllAdapter.notifyDataSetChanged();
+                    }
+                }
+            });
+        }
     }
 }

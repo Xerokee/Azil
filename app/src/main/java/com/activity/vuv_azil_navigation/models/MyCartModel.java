@@ -8,6 +8,7 @@ public class MyCartModel {
     String currentTime;
     String totalQuantity;
     int totalPrice;
+    String documentId;
 
     public MyCartModel() {
     }
@@ -19,6 +20,14 @@ public class MyCartModel {
         this.currentTime = currentTime;
         this.totalQuantity = totalQuantity;
         this.totalPrice = totaPrice;
+    }
+
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
     }
 
     public String getProductName() {

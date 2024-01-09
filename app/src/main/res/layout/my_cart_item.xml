@@ -170,6 +170,11 @@
                 android:fontFamily="@font/alice"/>
 
         </LinearLayout>
+        <ImageView
+            android:id="@+id/delete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_delete_24"/>
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
