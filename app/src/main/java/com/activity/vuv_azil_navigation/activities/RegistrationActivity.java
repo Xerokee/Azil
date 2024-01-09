@@ -13,7 +13,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.activity.vuv_azil_navigation.MainActivity;
 import com.activity.vuv_azil_navigation.R;
 import com.activity.vuv_azil_navigation.models.UserModel;
 import com.google.android.gms.tasks.OnCompleteListener;

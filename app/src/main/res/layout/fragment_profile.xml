@@ -98,6 +98,7 @@
         android:layout_height="wrap_content"
         android:padding="14dp"
         android:text="Ažuriraj"
+        android:textColor="@color/white"
         android:textAllCaps="false"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
