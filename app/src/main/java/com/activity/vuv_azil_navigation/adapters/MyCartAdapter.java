@@ -63,7 +63,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                
+
                                 if (task.isSuccessful()){
                                     cartModelList.remove(cartModelList.get(position));
                                     notifyDataSetChanged();

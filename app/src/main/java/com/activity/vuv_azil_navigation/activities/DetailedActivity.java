@@ -142,7 +142,7 @@ public class DetailedActivity extends AppCompatActivity {
                         }
                     });
         } else {
-            Toast.makeText(DetailedActivity.this, "Niste prijavljeni. Molimo prijavite se prije dodavanja u košaricu!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(DetailedActivity.this, "Niste prijavljeni. Molimo prijavite se!", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(DetailedActivity.this, HomeActivity.class));
         }
     }

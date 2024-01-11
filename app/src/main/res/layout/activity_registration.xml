@@ -82,6 +82,7 @@
         android:layout_marginTop="20dp"
         android:padding="14dp"
         android:text="Registriraj se"
+        android:textColor="@color/white"
         android:textAllCaps="false"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -89,6 +90,7 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password_reg" />
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -99,16 +101,16 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.339"
+        app:layout_constraintHorizontal_bias="0.254"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/reg_btn"
-        app:layout_constraintVertical_bias="0.092" />
+        app:layout_constraintVertical_bias="0.091" />
 
     <TextView
         android:id="@+id/sign_in"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Prijavite se"
+        android:text="Prijavite se!"
         android:textSize="18sp"
         android:textColor="@color/purple_700"
         app:layout_constraintHorizontal_bias="0.1"
