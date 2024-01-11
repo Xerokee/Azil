@@ -24,18 +24,25 @@
         android:orientation="vertical">
 
         <EditText
-            android:elevation="3dp"
             android:id="@+id/search_box"
+            android:elevation="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:drawableLeft="@drawable/ic_baseline_search_24"
+            android:drawablePadding="5dp"
             android:background="@drawable/search_gb"
-            android:padding="13dp"
             android:hint="Pretraži svoju životinju ovdje..."
             android:textColorHint="@color/purple_700"
             android:textColor="@color/purple_700"
-            android:drawablePadding="5dp"/>
+            android:padding="13dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/search_rec"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"/>
 
         <LinearLayout
             android:layout_marginLeft="10dp"
