@@ -62,29 +62,56 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
         holder.deleteItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                firestore.collection("AnimalsForAdoption")
-                        .document(cartModelList.get(position).getAnimalId())
-                        .delete()
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    cartModelList.remove(cartModelList.get(position));
-                                    notifyDataSetChanged();
-                                    Toast.makeText(context, "Lista izbrisana", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(context, "Greška" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+                showDeleteConfirmationDialog(position);
             }
         });
+
         holder.updateItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showUpdateDialog(position);
             }
         });
+    }
+
+    private void showDeleteConfirmationDialog(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Potvrda brisanja");
+        builder.setMessage("Jeste li sigurni da želite izbrisati ovu stavku iz liste?");
+
+        builder.setPositiveButton("Da", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteItem(position);
+            }
+        });
+
+        builder.setNegativeButton("Ne", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing or handle accordingly
+            }
+        });
+
+        builder.show();
+    }
+
+    private void deleteItem(int position) {
+        firestore.collection("AnimalsForAdoption")
+                .document(cartModelList.get(position).getAnimalId())
+                .delete()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            cartModelList.remove(position); // Use 'position' instead of 'cartModelList.get(position)'
+                            notifyDataSetChanged();
+                            Toast.makeText(context, "Lista izbrisana", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(context, "Greška: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
         private void showUpdateDialog(int position) {
