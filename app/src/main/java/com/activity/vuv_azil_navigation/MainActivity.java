@@ -66,23 +66,31 @@ public class MainActivity extends AppCompatActivity {
         TextView headerEmail = headerView.findViewById(R.id.nav_header_email);
         CircleImageView headerImg = headerView.findViewById(R.id.nav_header_img);
 
-        database.getReference().child("Users").child(FirebaseAuth.getInstance().getUid())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        UserModel userModel = snapshot.getValue(UserModel.class);
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid != null) {
+            database.getReference().child("Korisnici").child(uid)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            UserModel userModel = snapshot.getValue(UserModel.class);
 
-                        headerName.setText(userModel.getName());
-                        headerEmail.setText(userModel.getEmail());
+                            if (userModel != null) {
+                                headerName.setText(userModel.getName());
+                                headerEmail.setText(userModel.getEmail());
 
-                        Glide.with(MainActivity.this).load(userModel.getProfileImg()).into(headerImg);
-                    }
+                                Glide.with(MainActivity.this).load(userModel.getProfileImg()).into(headerImg);
+                            }
+                        }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            // Handle onCancelled
+                        }
+                    });
+        } else {
+            // Handle the case where UID is null
+            // You might want to sign out the user or redirect to the login screen
+        }
     }
 
     @Override

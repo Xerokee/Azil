@@ -26,11 +26,11 @@
             android:title="@string/nove_ivotinje" />
         <item
             android:id="@+id/nav_my_orders"
-            android:icon="@drawable/ic_baseline_shopping_cart_24"
-            android:title="@string/moje_narud_be" />
+            android:icon="@drawable/baseline_warehouse_24"
+            android:title="@string/skloni_te" />
         <item
             android:id="@+id/nav_my_carts"
-            android:icon="@drawable/mycart"
-            android:title="@string/moja_ko_arica" />
+            android:icon="@drawable/baseline_view_list_24"
+            android:title="Lista Životinja" />
     </group>
 </menu>

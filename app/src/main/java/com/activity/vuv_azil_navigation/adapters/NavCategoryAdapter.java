@@ -39,7 +39,6 @@ public class NavCategoryAdapter extends RecyclerView.Adapter<NavCategoryAdapter.
         Glide.with(context).load(list.get(position).getImg_url()).into(holder.imageView);
         holder.name.setText(list.get(position).getName());
         holder.description.setText(list.get(position).getDescription());
-        holder.discount.setText(list.get(position).getDiscount());
     }
 
     @Override
@@ -50,13 +49,12 @@ public class NavCategoryAdapter extends RecyclerView.Adapter<NavCategoryAdapter.
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imageView;
-        TextView name,description,discount;
+        TextView name,description;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.cat_nav_img);
             name = itemView.findViewById(R.id.nav_cat_name);
             description = itemView.findViewById(R.id.nav_cat_description);
-            discount = itemView.findViewById(R.id.nav_cat_discount);
         }
     }
 }

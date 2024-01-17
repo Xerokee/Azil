@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -26,17 +27,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.UUID;
 
 public class DetailedActivity extends AppCompatActivity {
 
     TextView quantity;
-    int totalQuantity = 1;
-    int totalPrice = 0;
 
     ImageView detailedImg;
-    TextView price,rating,description;
+    TextView rating,description;
     Button addToCart;
-    ImageView addItem,removeItem;
     Toolbar toolbar;
     FirebaseFirestore firestore;
     FirebaseAuth auth;
@@ -52,17 +51,13 @@ public class DetailedActivity extends AppCompatActivity {
 
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
+
         final Object object = getIntent().getSerializableExtra("detail");
         if (object instanceof ViewAllModel){
             viewAllModel = (ViewAllModel) object;
         }
 
-        quantity = findViewById(R.id.quantity);
         detailedImg = findViewById(R.id.detailed_img);
-        addItem = findViewById(R.id.add_item);
-        removeItem = findViewById(R.id.remove_item);
-
-        price = findViewById(R.id.detailed_price);
         rating = findViewById(R.id.detailed_rating);
         description = findViewById(R.id.detailed_dec);
 
@@ -70,9 +65,6 @@ public class DetailedActivity extends AppCompatActivity {
             Glide.with(getApplicationContext()).load(viewAllModel.getImg_url()).into(detailedImg);
             rating.setText(viewAllModel.getRating());
             description.setText(viewAllModel.getDescription());
-            price.setText("Cijena :€"+viewAllModel.getPrice()+"/svaki");
-
-            totalPrice = viewAllModel.getPrice() * totalQuantity;
         }
 
         addToCart = findViewById(R.id.add_to_cart);
@@ -82,29 +74,6 @@ public class DetailedActivity extends AppCompatActivity {
                 addedToCart();
             }
         });
-        addItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (totalQuantity < 10){
-                    totalQuantity++;
-                    quantity.setText(String.valueOf(totalQuantity));
-                    totalPrice = viewAllModel.getPrice() * totalQuantity;
-                }
-            }
-        });
-        removeItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (totalQuantity > 1){
-                    totalQuantity--;
-                    quantity.setText(String.valueOf(totalQuantity));
-                    totalPrice = viewAllModel.getPrice() * totalQuantity;
-                }
-
-            }
-        });
     }
 
     private void addedToCart() {
@@ -112,6 +81,9 @@ public class DetailedActivity extends AppCompatActivity {
         FirebaseUser currentUser = auth.getCurrentUser();
 
         if (currentUser != null) {
+            String userUid = currentUser.getUid();
+            Log.d("DetailedActivity", "User UID: " + userUid);
+            Log.d("DetailedActivity", "Is user authenticated: " + (currentUser.isEmailVerified() ? "Yes" : "No"));
             String saveCurrentDate, saveCurrentTime;
             Calendar calForDate = Calendar.getInstance();
 
@@ -122,23 +94,24 @@ public class DetailedActivity extends AppCompatActivity {
             saveCurrentTime = currentTime.format(calForDate.getTime());
 
             final HashMap<String, Object> cartMap = new HashMap<>();
-
+            String animalId = UUID.randomUUID().toString();
+            cartMap.put("animalId", animalId);
             cartMap.put("productName", viewAllModel.getName());
-            cartMap.put("productPrice", price.getText().toString());
+            cartMap.put("productType", viewAllModel.getType()); // Add the product type
             cartMap.put("currentDate", saveCurrentDate);
             cartMap.put("currentTime", saveCurrentTime);
-            cartMap.put("totalQuantity", quantity.getText().toString());
-            cartMap.put("totalPrice", totalPrice);
 
-            firestore.collection("CurrentUser")
-                    .document(auth.getCurrentUser().getUid())
-                    .collection("AddToAdopt")
+            firestore.collection("AnimalsForAdoption")
                     .add(cartMap)
                     .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentReference> task) {
-                            Toast.makeText(DetailedActivity.this, "Dodano u Košaricu ", Toast.LENGTH_SHORT).show();
-                            finish();
+                            if (task.isSuccessful()) {
+                                Toast.makeText(DetailedActivity.this, "Dodano u listu udomljavanja! ", Toast.LENGTH_SHORT).show();
+                                finish();
+                            } else {
+                                Toast.makeText(DetailedActivity.this, "Greška: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
         } else {

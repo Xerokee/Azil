@@ -27,4 +27,6 @@
     <string name="moje_narud_be">Moje Narudžbe</string>
     <string name="moja_ko_arica">Moja Košarica</string>
     <string name="opis">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</string>
+    <string name="lista_ivotinja">Lista životinja</string>
+    <string name="skloni_te">Sklonište</string>
 </resources>

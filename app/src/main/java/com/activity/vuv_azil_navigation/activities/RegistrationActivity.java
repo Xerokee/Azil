@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,6 +20,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class RegistrationActivity extends AppCompatActivity {
@@ -35,6 +37,10 @@ public class RegistrationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
+
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.keepSynced(true);
 
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
@@ -93,7 +99,6 @@ public class RegistrationActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-
                             UserModel userModel = new UserModel(userName,userEmail,userPassword);
                             String id = task.getResult().getUser().getUid();
                             database.getReference().child("Korisnici").child(id).setValue(userModel);
@@ -103,7 +108,8 @@ public class RegistrationActivity extends AppCompatActivity {
                         }
                         else{
                             progressBar.setVisibility(View.GONE);
-                            Toast.makeText(RegistrationActivity.this, "Greška: "+task.getException(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegistrationActivity.this, "Registracija neuspješna: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            Log.e("RegistrationActivity", "Registracija neuspješna", task.getException());
                         }
                     }
                 });

@@ -12,10 +12,12 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.activity.vuv_azil_navigation.adapters.MyCartAdapter;
 import com.activity.vuv_azil_navigation.models.MyCartModel;
@@ -56,43 +58,35 @@ public class MyCartsFragment extends Fragment {
 
         overTotalAmount = root.findViewById(R.id.textView7);
 
-        LocalBroadcastManager.getInstance(getActivity())
-                .registerReceiver(mMessageReceiver, new IntentFilter("MyTotalAmount"));
-
         cartModelList = new ArrayList<>();
         cartAdapter = new MyCartAdapter(getActivity(),cartModelList);
         recyclerView.setAdapter(cartAdapter);
 
-        db.collection("AddToAdopt").document(auth.getCurrentUser().getUid())
-                .collection("CurrentUser").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.collection("AnimalsForAdoption") // Remove the UID constraint
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()){
-                            for (DocumentSnapshot documentSnapshot : task.getResult().getDocuments()){
-
-                                String documentId = documentSnapshot.getId();
-
+                        if (task.isSuccessful()) {
+                            cartModelList.clear(); // Clear the list before adding items
+                            for (DocumentSnapshot documentSnapshot : task.getResult().getDocuments()) {
+                                String animalId = documentSnapshot.getId();
                                 MyCartModel cartModel = documentSnapshot.toObject(MyCartModel.class);
-
-                                cartModel.setDocumentId(documentId);
-
+                                cartModel.setAnimalId(animalId);
                                 cartModelList.add(cartModel);
-                                cartAdapter.notifyDataSetChanged();
-                                recyclerView.setVisibility(View.VISIBLE);
+
+                                // Log the content of each cartModel
+                                Log.d("MyCartsFragment", "CartModel: " + cartModel.getProductName() + ", " + cartModel.getProductType() + ", " + cartModel.getCurrentDate() + ", " + cartModel.getCurrentTime() + ", " + cartModel.getAnimalId());
                             }
+                            Log.d("MyCartsFragment", "Number of items: " + cartModelList.size());
+                            cartAdapter.notifyDataSetChanged();
+                            recyclerView.setVisibility(View.VISIBLE);
+                        } else {
+                            // Handle the error
+                            Toast.makeText(getActivity(), "Greška: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
 
         return root;
     }
-
-    public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            int totalBill = intent.getIntExtra("totalAmount",0);
-            overTotalAmount.setText("Ukupan Račun :"+totalBill+"€");
-        }
-    };
 }

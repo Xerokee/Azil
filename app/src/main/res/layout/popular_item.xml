@@ -56,17 +56,6 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/alice"/>
 
-            <TextView
-                android:id="@+id/pop_discount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="Sniženje na 20%"
-                android:textColor="@color/purple_700"
-                android:textStyle="bold"
-                android:gravity="end"
-                android:fontFamily="@font/alice"/>
-
         </LinearLayout>
 
     </LinearLayout>

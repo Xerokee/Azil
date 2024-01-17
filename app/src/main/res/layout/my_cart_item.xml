@@ -10,7 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#B3FB9F"
+        android:background="@color/purple_700"
         android:padding="8dp"
         android:orientation="vertical">
 
@@ -51,17 +51,17 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textStyle="bold"
-                android:text="Cijena Životinje"
+                android:text="Tip Životinje"
                 android:textSize="16sp"
                 android:fontFamily="@font/alice"/>
 
             <TextView
-                android:id="@+id/product_price"
+                android:id="@+id/product_type"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textStyle="bold"
-                android:text="Cijena Životinje"
+                android:text="Tip Životinje"
                 android:textSize="16sp"
                 android:fontFamily="@font/alice"/>
 
@@ -124,57 +124,27 @@
             android:orientation="horizontal"
             android:weightSum="2">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textStyle="bold"
-                android:text="Ukupna Cijena"
-                android:textSize="16sp"
-                android:fontFamily="@font/alice"/>
-
-            <TextView
-                android:id="@+id/total_price"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textStyle="bold"
-                android:text="Ukupna Cijena"
-                android:textSize="16sp"
-                android:fontFamily="@font/alice"/>
-
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="2">
 
-            <TextView
-                android:layout_width="match_parent"
+            <ImageView
+                android:id="@+id/update"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textStyle="bold"
-                android:text="Ukupna Količina"
-                android:textSize="16sp"
-                android:fontFamily="@font/alice"/>
+                android:src="@drawable/baseline_edit_24" />
 
-            <TextView
-                android:id="@+id/total_quantity"
-                android:layout_width="match_parent"
+            <ImageView
+                android:id="@+id/delete"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textStyle="bold"
-                android:text="Ukupna Količina"
-                android:textSize="16sp"
-                android:fontFamily="@font/alice"/>
-
+                android:src="@drawable/ic_baseline_delete_24" />
         </LinearLayout>
-        <ImageView
-            android:id="@+id/delete"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_delete_24"/>
-    </LinearLayout>
+</LinearLayout>
 
 </androidx.cardview.widget.CardView>

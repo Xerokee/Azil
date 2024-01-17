@@ -1,33 +1,24 @@
 package com.activity.vuv_azil_navigation.models;
 
+import java.util.UUID;
+
 public class MyCartModel {
 
     String productName;
-    String productPrice;
+    String productType;
     String currentDate;
     String currentTime;
-    String totalQuantity;
-    int totalPrice;
-    String documentId;
+    String animalId;
 
     public MyCartModel() {
     }
 
-    public MyCartModel(String productName, String productPrice, String currentDate, String currentTime, String totalQuantity, int totaPrice) {
+    public MyCartModel(String productName, String productType, String currentDate, String currentTime) {
         this.productName = productName;
-        this.productPrice = productPrice;
+        this.productType = productType;
         this.currentDate = currentDate;
         this.currentTime = currentTime;
-        this.totalQuantity = totalQuantity;
-        this.totalPrice = totaPrice;
-    }
-
-    public String getDocumentId() {
-        return documentId;
-    }
-
-    public void setDocumentId(String documentId) {
-        this.documentId = documentId;
+        this.animalId = UUID.randomUUID().toString();;
     }
 
     public String getProductName() {
@@ -38,12 +29,12 @@ public class MyCartModel {
         this.productName = productName;
     }
 
-    public String getProductPrice() {
-        return productPrice;
+    public String getProductType() {
+        return productType;
     }
 
-    public void setProductPrice(String productPrice) {
-        this.productPrice = productPrice;
+    public void setProductType(String productType) {
+        this.productType = productType;
     }
 
     public String getCurrentDate() {
@@ -62,19 +53,11 @@ public class MyCartModel {
         this.currentTime = currentTime;
     }
 
-    public String getTotalQuantity() {
-        return totalQuantity;
+    public String getAnimalId() {
+        return animalId;
     }
 
-    public void setTotalQuantity(String totalQuantity) {
-        this.totalQuantity = totalQuantity;
-    }
-
-    public int getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(int totalPrice) {
-        this.totalPrice = totalPrice;
+    public void setAnimalId(String animalId) {
+        this.animalId = animalId;
     }
 }

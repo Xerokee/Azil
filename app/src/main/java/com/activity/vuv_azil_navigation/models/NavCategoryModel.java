@@ -3,7 +3,6 @@ package com.activity.vuv_azil_navigation.models;
 public class NavCategoryModel {
     String name;
     String description;
-    String discount;
     String img_url;
 
     public NavCategoryModel() {
@@ -12,7 +11,6 @@ public class NavCategoryModel {
     public NavCategoryModel(String name, String description, String discount, String img_url) {
         this.name = name;
         this.description = description;
-        this.discount = discount;
         this.img_url = img_url;
     }
 
@@ -30,14 +28,6 @@ public class NavCategoryModel {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(String discount) {
-        this.discount = discount;
     }
 
     public String getImg_url() {

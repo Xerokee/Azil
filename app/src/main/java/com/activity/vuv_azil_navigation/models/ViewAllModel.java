@@ -8,7 +8,6 @@ public class ViewAllModel implements Serializable {
     String rating;
     String img_url;
     String type;
-    int price;
 
     public ViewAllModel(){
     }
@@ -19,7 +18,6 @@ public class ViewAllModel implements Serializable {
         this.rating = rating;
         this.img_url = img_url;
         this.type = type;
-        this.price = price;
     }
 
     public String getName() {
@@ -60,13 +58,5 @@ public class ViewAllModel implements Serializable {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
     }
 }

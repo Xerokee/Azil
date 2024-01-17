@@ -51,17 +51,20 @@ public class ProfileFragment extends Fragment {
         profileImg = root.findViewById(R.id.profile_img);
         name = root.findViewById(R.id.profile_name);
         email = root.findViewById(R.id.profile_email);
-        number = root.findViewById(R.id.profile_number);
-        address = root.findViewById(R.id.profile_adress);
         update = root.findViewById(R.id.update);
 
-        database.getReference().child("Users").child(FirebaseAuth.getInstance().getUid())
+        database.getReference().child("Korisnici").child(FirebaseAuth.getInstance().getUid())
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 UserModel userModel = snapshot.getValue(UserModel.class);
 
-                                Glide.with(getContext()).load(userModel.getProfileImg()).into(profileImg);
+                                if (userModel != null && userModel.getProfileImg() != null) {
+                                    Glide.with(getContext()).load(userModel.getProfileImg()).into(profileImg);
+                                } else {
+                                    // Postavite defaultnu sliku profila ako nema dostupne slike
+                                    // Glide.with(getContext()).load(R.drawable.default_profile_image).into(profileImg);
+                                }
                             }
 
                             @Override
@@ -113,7 +116,7 @@ public class ProfileFragment extends Fragment {
                     reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-                            database.getReference().child("Users").child(FirebaseAuth.getInstance().getUid())
+                            database.getReference().child("Korisnici").child(FirebaseAuth.getInstance().getUid())
                                     .child("profileImg").setValue(profileUri.toString());
                             Toast.makeText(getContext(),"Slika Profila Prenesena",Toast.LENGTH_SHORT).show();
                         }
