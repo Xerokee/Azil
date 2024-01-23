@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/alice"
-                android:text="Ime Životinje"
+                android:text="Ime Životinje:"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/alice"
-                android:text="Tip Životinje"
+                android:text="Tip Životinje:"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -79,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/alice"
-                android:text="Datum dodavanja"
+                android:text="Datum dodavanja:"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -106,7 +106,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/alice"
-                android:text="Vrijeme dodavanja"
+                android:text="Vrijeme dodavanja:"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -133,7 +133,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/alice"
-                android:text="Slika Životinje"
+                android:text="Slika Životinje:"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 

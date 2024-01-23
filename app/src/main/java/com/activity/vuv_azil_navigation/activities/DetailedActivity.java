@@ -103,7 +103,7 @@ public class DetailedActivity extends AppCompatActivity {
             cartMap.put("animalType", viewAllModel.getType());
             cartMap.put("currentDate", saveCurrentDate);
             cartMap.put("currentTime", saveCurrentTime);
-            cartMap.put("imgUrl", viewAllModel.getImg_url());
+            cartMap.put("img_url", viewAllModel.getImg_url());
 
             firestore.collection("AnimalsForAdoption")
                     .add(cartMap)

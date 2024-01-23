@@ -62,7 +62,7 @@ public class MyCartModel {
     public void setAnimalId(String animalId) {
         this.animalId = animalId;
     }
-    public String getImgUrl() {return img_url; }
+    public String getimg_url() {return img_url; }
 
-    public void setImgUrl(String img_url) {this.img_url = img_url; }
+    public void setimg_url(String img_url) {this.img_url = img_url; }
 }

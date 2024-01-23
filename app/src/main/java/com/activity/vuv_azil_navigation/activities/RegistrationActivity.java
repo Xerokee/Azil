@@ -36,9 +36,9 @@ public class RegistrationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_registration);
 
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReference.keepSynced(true);
 
