@@ -45,8 +45,10 @@
         android:fontFamily="@font/alice"
         android:text="5.0"
         android:textSize="20sp"
-        tools:layout_editor_absoluteX="192dp"
-        tools:layout_editor_absoluteY="300dp" />
+        app:layout_constraintBottom_toTopOf="@+id/imageView2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detailed_img" />
 
     <TextView
         android:id="@+id/textView6"
