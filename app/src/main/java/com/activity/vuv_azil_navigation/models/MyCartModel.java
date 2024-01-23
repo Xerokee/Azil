@@ -4,37 +4,39 @@ import java.util.UUID;
 
 public class MyCartModel {
 
-    String productName;
-    String productType;
+    String animalName;
+    String animalType;
     String currentDate;
     String currentTime;
     String animalId;
+    String img_url;
 
     public MyCartModel() {
     }
 
-    public MyCartModel(String productName, String productType, String currentDate, String currentTime) {
-        this.productName = productName;
-        this.productType = productType;
+    public MyCartModel(String animalName, String animalType, String currentDate, String currentTime, String img_url) {
+        this.animalName = animalName;
+        this.animalType = animalType;
         this.currentDate = currentDate;
         this.currentTime = currentTime;
         this.animalId = UUID.randomUUID().toString();;
+        this.img_url = img_url;
     }
 
-    public String getProductName() {
-        return productName;
+    public String getAnimalName() {
+        return animalName;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
+    public void setAnimalName(String animalName) {
+        this.animalName = animalName;
     }
 
-    public String getProductType() {
-        return productType;
+    public String getAnimalType() {
+        return animalType;
     }
 
-    public void setProductType(String productType) {
-        this.productType = productType;
+    public void setAnimalType(String animalType) {
+        this.animalType = animalType;
     }
 
     public String getCurrentDate() {
@@ -60,4 +62,7 @@ public class MyCartModel {
     public void setAnimalId(String animalId) {
         this.animalId = animalId;
     }
+    public String getImgUrl() {return img_url; }
+
+    public void setImgUrl(String img_url) {this.img_url = img_url; }
 }

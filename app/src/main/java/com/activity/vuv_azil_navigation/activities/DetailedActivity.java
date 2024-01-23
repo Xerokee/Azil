@@ -27,6 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.UUID;
 
 public class DetailedActivity extends AppCompatActivity {
@@ -87,19 +88,22 @@ public class DetailedActivity extends AppCompatActivity {
             String saveCurrentDate, saveCurrentTime;
             Calendar calForDate = Calendar.getInstance();
 
-            SimpleDateFormat currentDate = new SimpleDateFormat("MM dd, yyyy");
+            SimpleDateFormat currentDate = new SimpleDateFormat("dd. MM. yyyy", new Locale("hr", "HR"));
             saveCurrentDate = currentDate.format(calForDate.getTime());
 
-            SimpleDateFormat currentTime = new SimpleDateFormat("HH:mm:ss a");
+            SimpleDateFormat currentTime = new SimpleDateFormat("HH:mm:ss", new Locale("hr", "HR"));
             saveCurrentTime = currentTime.format(calForDate.getTime());
+
+            saveCurrentTime = saveCurrentTime + " sati";
 
             final HashMap<String, Object> cartMap = new HashMap<>();
             String animalId = UUID.randomUUID().toString();
             cartMap.put("animalId", animalId);
-            cartMap.put("productName", viewAllModel.getName());
-            cartMap.put("productType", viewAllModel.getType()); // Add the product type
+            cartMap.put("animalName", viewAllModel.getName());
+            cartMap.put("animalType", viewAllModel.getType());
             cartMap.put("currentDate", saveCurrentDate);
             cartMap.put("currentTime", saveCurrentTime);
+            cartMap.put("imgUrl", viewAllModel.getImg_url());
 
             firestore.collection("AnimalsForAdoption")
                     .add(cartMap)

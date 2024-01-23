@@ -75,7 +75,7 @@ public class MyCartsFragment extends Fragment {
                                 cartModelList.add(cartModel);
 
                                 // Log the content of each cartModel
-                                Log.d("MyCartsFragment", "CartModel: " + cartModel.getProductName() + ", " + cartModel.getProductType() + ", " + cartModel.getCurrentDate() + ", " + cartModel.getCurrentTime() + ", " + cartModel.getAnimalId());
+                                Log.d("MyCartsFragment", "CartModel: " + cartModel.getAnimalName() + ", " + cartModel.getAnimalType() + ", " + cartModel.getCurrentDate() + ", " + cartModel.getCurrentTime() + ", " + cartModel.getAnimalId());
                             }
                             Log.d("MyCartsFragment", "Number of items: " + cartModelList.size());
                             cartAdapter.notifyDataSetChanged();

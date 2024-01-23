@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.vuv_azil_navigation.R;
 import com.activity.vuv_azil_navigation.models.MyCartModel;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -52,10 +53,11 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         MyCartModel cartModel = cartModelList.get(position);
-        Log.d("MyCartAdapter", "MyCartModel at position " + position + ": " + cartModel.getProductName() + ", " + cartModel.getProductType() + ", " + cartModel.getCurrentDate() + ", " + cartModel.getCurrentTime() + ", " + cartModel.getAnimalId());
+        Glide.with(context).load(cartModelList.get(position).getImgUrl()).into(holder.img_url);
+        Log.d("MyCartAdapter", "MyCartModel at position " + position + ": " + cartModel.getAnimalName() + ", " + cartModel.getAnimalType() + ", " + cartModel.getCurrentDate() + ", " + cartModel.getCurrentTime() + ", " + cartModel.getImgUrl() + ", " + cartModel.getAnimalId());
 
-        holder.name.setText(cartModelList.get(position).getProductName());
-        holder.type.setText(cartModelList.get(position).getProductType());
+        holder.name.setText(cartModelList.get(position).getAnimalName());
+        holder.type.setText(cartModelList.get(position).getAnimalType());
         holder.date.setText(cartModelList.get(position).getCurrentDate());
         holder.time.setText(cartModelList.get(position).getCurrentTime());
 
@@ -124,13 +126,15 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
             EditText edtType = view.findViewById(R.id.edt_updated_type);
             EditText edtDate = view.findViewById(R.id.edt_updated_date);
             EditText edtTime = view.findViewById(R.id.edt_updated_time);
+            EditText edtImg_url = view.findViewById(R.id.edt_updated_img_url);
 
             // Set the existing values to EditTexts
             MyCartModel cartModel = cartModelList.get(position);
-            edtName.setText(cartModel.getProductName());
-            edtType.setText(cartModel.getProductType());
+            edtName.setText(cartModel.getAnimalName());
+            edtType.setText(cartModel.getAnimalType());
             edtDate.setText(cartModel.getCurrentDate());
             edtTime.setText(cartModel.getCurrentTime());
+            edtImg_url.setText(cartModel.getImgUrl());
 
             builder.setPositiveButton("Ažuriraj", new DialogInterface.OnClickListener() {
                 @Override
@@ -139,6 +143,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
                     String updatedType = edtType.getText().toString().trim();
                     String updatedDate = edtDate.getText().toString().trim();
                     String updatedTime = edtTime.getText().toString().trim();
+                    String updatedImgUrl = edtImg_url.getText().toString().trim();
 
                     // Check if any field is empty
                     if (TextUtils.isEmpty(updatedName) || TextUtils.isEmpty(updatedType) ||
@@ -146,7 +151,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
                         Toast.makeText(context, "Molimo popunite sva polja", Toast.LENGTH_SHORT).show();
                     } else {
                         // Update Firestore document
-                        updateFirestoreDocument(position, updatedName, updatedType, updatedDate, updatedTime);
+                        updateFirestoreDocument(position, updatedName, updatedType, updatedDate, updatedTime, updatedImgUrl);
                     }
                 }
             });
@@ -162,15 +167,16 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
             dialog.show();
         }
 
-    private void updateFirestoreDocument(int position, String updatedName, String updatedType, String updatedDate, String updatedTime) {
+    private void updateFirestoreDocument(int position, String updatedName, String updatedType, String updatedDate, String updatedTime, String updatedImgUrl) {
         // Update Firestore document with the new information
         MyCartModel cartModel = cartModelList.get(position);
 
         Map<String, Object> updateData = new HashMap<>();
-        updateData.put("productName", updatedName);
-        updateData.put("productType", updatedType);
+        updateData.put("animalName", updatedName);
+        updateData.put("animalType", updatedType);
         updateData.put("currentDate", updatedDate);
         updateData.put("currentTime", updatedTime);
+        updateData.put("img_url", updatedImgUrl);
 
         firestore.collection("AnimalsForAdoption")
                 .document(cartModel.getAnimalId())
@@ -180,10 +186,11 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
                             // Update the corresponding item in the list
-                            cartModel.setProductName(updatedName);
-                            cartModel.setProductType(updatedType);
+                            cartModel.setAnimalName(updatedName);
+                            cartModel.setAnimalType(updatedType);
                             cartModel.setCurrentDate(updatedDate);
                             cartModel.setCurrentTime(updatedTime);
+                            cartModel.setImgUrl(updatedImgUrl);
 
                             // Notify the adapter that the data has changed
                             notifyDataSetChanged();
@@ -206,6 +213,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView name,type,date,time;
+        ImageView img_url;
         ImageView deleteItem;
         ImageView updateItem;
         public ViewHolder(@NonNull View itemView) {
@@ -215,6 +223,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
             type = itemView.findViewById(R.id.product_type);
             date = itemView.findViewById(R.id.current_date);
             time = itemView.findViewById(R.id.current_time);
+            img_url = itemView.findViewById(R.id.img_url);
             deleteItem = itemView.findViewById(R.id.delete);
             updateItem = itemView.findViewById(R.id.update);
         }
