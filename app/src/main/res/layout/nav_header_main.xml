@@ -15,33 +15,34 @@
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/nav_header_img"
         android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_height="70dp"
         android:layout_marginTop="15dp"
         android:src="@drawable/profile"
         app:civ_border_color="#FFFFFF"
         app:civ_border_width="2dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/nav_header_name"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        android:fontFamily="@font/alice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/alice"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:text="@string/nav_header_title"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/black"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/nav_header_email"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textStyle="bold"
+        android:layout_width="390dp"
+        android:layout_height="21dp"
+        android:layout_marginBottom="8dp"
         android:fontFamily="@font/alice"
-        android:text="@string/nav_header_subtitle" />
+        android:text="@string/nav_header_subtitle"
+        android:textColor="@color/black"
+        android:textStyle="bold" />
 
 </LinearLayout>
