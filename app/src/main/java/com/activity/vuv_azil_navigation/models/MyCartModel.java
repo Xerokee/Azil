@@ -10,6 +10,8 @@ public class MyCartModel {
     String currentTime;
     String animalId;
     String img_url;
+    private boolean adopted;
+    private String adopterId;
 
     public MyCartModel() {
     }
@@ -64,5 +66,14 @@ public class MyCartModel {
     }
     public String getimg_url() {return img_url; }
 
-    public void setimg_url(String img_url) {this.img_url = img_url; }
+    public void setimg_url(String img_url) { this.img_url = img_url; }
+    public boolean isAdopted() {
+        return adopted;
+    }
+
+    public void setAdopted(boolean adopted) { this.adopted = adopted; }
+
+    public String getAdopterId() { return adopterId; }
+
+    public void setAdopterId(String adopterId) { this.adopterId = adopterId; }
 }

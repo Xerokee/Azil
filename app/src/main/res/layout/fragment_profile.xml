@@ -68,7 +68,7 @@
         android:drawablePadding="10dp"
         android:elevation="3dp"
         android:hint="Vaša Lozinka"
-        android:inputType="textEmailAddress"
+        android:inputType="textPassword"
         android:padding="13dp"
         android:textColor="@color/purple_700"
         android:textColorHint="@color/purple_700"

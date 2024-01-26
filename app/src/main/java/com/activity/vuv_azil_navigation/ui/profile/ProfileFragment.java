@@ -1,5 +1,6 @@
 package com.activity.vuv_azil_navigation.ui.profile;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.activity.vuv_azil_navigation.R;
 import com.activity.vuv_azil_navigation.activities.HomeActivity;
@@ -21,14 +23,19 @@ import com.activity.vuv_azil_navigation.models.UserModel;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -42,9 +49,13 @@ public class ProfileFragment extends Fragment {
     FirebaseAuth auth;
     FirebaseDatabase database;
 
+    public static final String ACTION_PROFILE_UPDATED = "com.activity.vuv_azil_navigation.PROFILE_UPDATED";
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        loadUserProfile();
 
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
@@ -62,10 +73,8 @@ public class ProfileFragment extends Fragment {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Logout user
+                // Odjava korisnika i preusmjeravanje
                 FirebaseAuth.getInstance().signOut();
-
-                // Redirect to HomeActivity
                 Intent intent = new Intent(getActivity(), HomeActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
@@ -87,13 +96,11 @@ public class ProfileFragment extends Fragment {
                                 if (userModel != null) {
                                     name.setText(userModel.getName());
                                     email.setText(userModel.getEmail());
-                                    password.setText(userModel.getPassword());
 
                                     if (userModel.getProfileImg() != null) {
                                         Glide.with(getContext()).load(userModel.getProfileImg()).into(profileImg);
                                     } else {
-                                        // Postavite defaultnu sliku profila ako nema dostupne slike
-                                        // Glide.with(getContext()).load(R.drawable.default_profile_image).into(profileImg);
+                                        Glide.with(getContext()).load(R.drawable.profile).into(profileImg);
                                     }
                                 }
                             }
@@ -106,9 +113,11 @@ public class ProfileFragment extends Fragment {
             }
         }
 
+        // Listener za promjenu slike profila
         profileImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Kod za odabir nove slike
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
@@ -116,6 +125,7 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        // Listener za gumb ažuriranja
         update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,49 +136,96 @@ public class ProfileFragment extends Fragment {
         return root;
     }
 
-    private void updateUserProfile() {
-        // Dohvatite nove podatke iz polja za unos
-        String newName = name.getText().toString();
-        String newEmail = email.getText().toString();
-        String newPassword = password.getText().toString();
-
-        // Ažurirajte korisničke podatke u bazi podataka
-        String uid = FirebaseAuth.getInstance().getUid();
-        if (uid != null) {
-            DatabaseReference userRef = database.getReference().child("Korisnici").child(uid);
-            userRef.child("name").setValue(newName);
-            userRef.child("email").setValue(newEmail);
-            userRef.child("password").setValue(newPassword);
-
-            Toast.makeText(getContext(), "Profil ažuriran", Toast.LENGTH_SHORT).show();
+    private void loadUserProfile() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            String uid = currentUser.getUid();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("Korisnici").document(uid)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            UserModel userModel = documentSnapshot.toObject(UserModel.class);
+                            if (userModel != null) {
+                                name.setText(userModel.getName());
+                                email.setText(userModel.getEmail());
+                                if (userModel.getProfileImg() != null) {
+                                    Glide.with(getContext()).load(userModel.getProfileImg()).into(profileImg);
+                                }
+                            }
+                        }
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(getContext(), "Greška: " + e.getMessage(), Toast.LENGTH_SHORT).show());
         }
+    }
+
+    private void updateUserProfile() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            Toast.makeText(getContext(), "Korisnik nije prijavljen.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String uid = currentUser.getUid();
+        String newName = name.getText().toString().trim();
+        String newEmail = email.getText().toString().trim();
+        String newPassword = password.getText().toString().trim();
+
+        updateUserEmailAndName(currentUser, newEmail, newName, uid);
+
+        if (!newPassword.isEmpty()) {
+            currentUser.updatePassword(newPassword)
+                    .addOnSuccessListener(aVoid -> Toast.makeText(getContext(), "Lozinka ažurirana", Toast.LENGTH_SHORT).show())
+                    .addOnFailureListener(e -> Toast.makeText(getContext(), "Greška: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        }
+    }
+
+
+    private void updateUserEmailAndName(FirebaseUser currentUser, String newEmail, String newName, String uid) {
+        currentUser.updateEmail(newEmail)
+                .addOnSuccessListener(aVoid -> {
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    Map<String, Object> userUpdates = new HashMap<>();
+                    userUpdates.put("name", newName);
+                    userUpdates.put("email", newEmail);
+
+                    db.collection("Korisnici").document(uid)
+                            .update(userUpdates)
+                            .addOnSuccessListener(unused -> {
+                                Toast.makeText(getContext(), "Profil ažuriran", Toast.LENGTH_SHORT).show();
+                                // Šalje Broadcast samo ovdje
+                                Intent intent = new Intent(ACTION_PROFILE_UPDATED);
+                                LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(getContext(), "Greška: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                });
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (data != null && data.getData() != null) {
+        if (requestCode == 33 && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
             Uri profileUri = data.getData();
             profileImg.setImageURI(profileUri);
 
-            final StorageReference reference = storage.getReference().child("profile_picture")
-                    .child(FirebaseAuth.getInstance().getUid());
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (currentUser == null) {
+                Toast.makeText(getContext(), "Greška: Korisnik nije prijavljen.", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-            reference.putFile(profileUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Toast.makeText(getContext(), "Slika Prenesena", Toast.LENGTH_SHORT).show();
+            String uid = currentUser.getUid();
+            StorageReference reference = storage.getReference().child("profile_picture").child(uid);
 
-                    reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            database.getReference().child("Korisnici").child(FirebaseAuth.getInstance().getUid())
-                                    .child("profileImg").setValue(profileUri.toString());
-                            Toast.makeText(getContext(), "Slika Profila Prenesena", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
+            reference.putFile(profileUri).addOnSuccessListener(taskSnapshot -> {
+                reference.getDownloadUrl().addOnSuccessListener(uri -> {
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    db.collection("Korisnici").document(uid)
+                            .update("profileImg", uri.toString())
+                            .addOnSuccessListener(unused -> Toast.makeText(getContext(), "Slika Profila Ažurirana", Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e -> Toast.makeText(getContext(), "Greška: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                });
             });
         }
     }

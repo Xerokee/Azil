@@ -22,6 +22,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -74,45 +75,56 @@ public class RegistrationActivity extends AppCompatActivity {
         String userEmail = email.getText().toString();
         String userPassword = password.getText().toString();
 
-        if (TextUtils.isEmpty(userName)){
+        if (TextUtils.isEmpty(userName)) {
             Toast.makeText(this, "Ime je prazno!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (TextUtils.isEmpty(userEmail)){
+        if (TextUtils.isEmpty(userEmail)) {
             Toast.makeText(this, "Mail je prazan!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (TextUtils.isEmpty(userPassword)){
+        if (TextUtils.isEmpty(userPassword)) {
             Toast.makeText(this, "Lozinka je prazna!", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (userPassword.length() < 6){
+
+        if (userPassword.length() < 6) {
             Toast.makeText(this, "Dužina lozinke mora biti veća od 6 slova", Toast.LENGTH_SHORT).show();
             return;
         }
 
         // Create User
-        auth.createUserWithEmailAndPassword(userEmail,userPassword)
+        auth.createUserWithEmailAndPassword(userEmail, userPassword)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
-                            UserModel userModel = new UserModel(userName,userEmail,userPassword);
+                        progressBar.setVisibility(View.GONE);
+                        if (task.isSuccessful()) {
+                            // Stvaramo novi UserModel objekt
+                            UserModel userModel = new UserModel(userName, userEmail, userPassword);
+
+                            // Dohvaćamo ID autentificiranog korisnika
                             String id = task.getResult().getUser().getUid();
-                            database.getReference().child("Korisnici").child(id).setValue(userModel);
-                            progressBar.setVisibility(View.GONE);
-                            Toast.makeText(RegistrationActivity.this, "Registracija je uspješna!", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
-                        }
-                        else{
-                            progressBar.setVisibility(View.GONE);
+
+                            // Spremamo korisnika u Firestore
+                            FirebaseFirestore.getInstance().collection("Korisnici").document(id)
+                                    .set(userModel)
+                                    .addOnSuccessListener(unused -> {
+                                        Toast.makeText(RegistrationActivity.this, "Registracija je uspješna!", Toast.LENGTH_SHORT).show();
+                                        startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
+                                        finish();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(RegistrationActivity.this, "Registracija neuspješna: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        Log.e("RegistrationActivity", "Greška pri spremanju u Firestore", e);
+                                    });
+                        } else {
                             Toast.makeText(RegistrationActivity.this, "Registracija neuspješna: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                             Log.e("RegistrationActivity", "Registracija neuspješna", task.getException());
                         }
                     }
                 });
-
     }
 }

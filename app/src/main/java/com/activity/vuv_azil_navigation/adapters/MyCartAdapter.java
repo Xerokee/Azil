@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,10 +23,13 @@ import com.activity.vuv_azil_navigation.R;
 import com.activity.vuv_azil_navigation.models.MyCartModel;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +78,14 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
                 showUpdateDialog(position);
             }
         });
+
+        if (cartModel.isAdopted()) {
+            holder.adoptButton.setEnabled(false);
+            holder.adoptButton.setText("Udomljeno");
+        } else {
+            holder.adoptButton.setEnabled(true);
+            holder.adoptButton.setText("Udomi sad");
+        }
     }
 
     private void showDeleteConfirmationDialog(int position) {
@@ -203,8 +215,6 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
                 });
     }
 
-
-
     @Override
     public int getItemCount() {
         return cartModelList.size();
@@ -216,6 +226,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
         ImageView img_url;
         ImageView deleteItem;
         ImageView updateItem;
+        Button adoptButton;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -226,6 +237,63 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
             img_url = itemView.findViewById(R.id.img_url);
             deleteItem = itemView.findViewById(R.id.delete);
             updateItem = itemView.findViewById(R.id.update);
+            adoptButton = itemView.findViewById(R.id.adoptButton);
+
+            adoptButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        MyCartModel selectedAnimal = cartModelList.get(position);
+                        showAdoptionDialog(selectedAnimal, position);
+                    }
+                }
+            });
+        }
+
+        private void showAdoptionDialog(MyCartModel selectedAnimal, int position) {
+            // Ovdje ćemo pretpostaviti da imate metodu koja dohvaća listu mogućih udomitelja iz Firebase-a.
+            // Kada dohvatite listu, prikažite AlertDialog sa svim udomiteljima.
+            List<String> adopterNames = new ArrayList<>(); // Ovo trebate napuniti stvarnim podacima
+            // Dohvatite listu udomitelja iz Firebase-a i napunite adopterNames.
+
+            CharSequence[] adoptersArray = adopterNames.toArray(new CharSequence[0]);
+            new AlertDialog.Builder(context)
+                    .setTitle("Odaberite udomitelja")
+                    .setItems(adoptersArray, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // 'which' je indeks odabranog udomitelja. Ovdje ćemo pretpostaviti da imate ID-eve udomitelja.
+                            String adopterId = "ID_od_adoptera"; // Ovdje bi trebali umetnuti stvarni ID odabranog udomitelja
+                            adoptAnimal(selectedAnimal, adopterId, position);
+                        }
+                    })
+                    .show();
+        }
+
+        private void adoptAnimal(MyCartModel animal, String adopterId, int position) {
+            Map<String, Object> adoptionUpdates = new HashMap<>();
+            adoptionUpdates.put("adopted", true); // Pretpostavljamo da imate 'adopted' polje u Firestore dokumentu
+            adoptionUpdates.put("adopterId", adopterId); // I 'adopterId' polje u Firestore dokumentu
+
+            firestore.collection("AnimalsForAdoption").document(animal.getAnimalId())
+                    .update(adoptionUpdates)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // Ažuriranje UI-a nakon uspješnog udomljavanja
+                            Toast.makeText(context, "Životinja je udomljena!", Toast.LENGTH_SHORT).show();
+                            animal.setAdopted(true); // Ovdje ažuriramo model da je životinja udomljena
+                            notifyItemChanged(position); // Obavještavamo adapter da je došlo do promjene
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // U slučaju neuspjeha, prikazujemo poruku o grešci
+                            Toast.makeText(context, "Udomljavanje nije uspjelo: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
         }
     }
 }
