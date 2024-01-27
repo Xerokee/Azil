@@ -5,15 +5,16 @@ public class UserModel {
     String email;
     String password;
     String profileImg;
-
+    boolean isAdmin;
 
     public UserModel() {
     }
 
-    public UserModel(String name, String email, String password) {
+    public UserModel(String name, String email, String password, boolean isAdmin) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.isAdmin = isAdmin;
     }
 
     public String getProfileImg() {
@@ -39,9 +40,18 @@ public class UserModel {
     public void setEmail(String email) {
         this.email = email;
     }
+
     public String getPassword() { return password; }
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean getIsAdmin() {
+        return isAdmin;
+    }
+
+    public void setIsAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
     }
 }

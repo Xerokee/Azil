@@ -3,7 +3,6 @@ package com.activity.vuv_azil_navigation.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,18 +15,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.vuv_azil_navigation.R;
 import com.activity.vuv_azil_navigation.models.MyCartModel;
+import com.activity.vuv_azil_navigation.models.UserModel;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,33 +51,22 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.my_cart_item,parent,false));
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_cart_item, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         MyCartModel cartModel = cartModelList.get(position);
-        Glide.with(context).load(cartModelList.get(position).getimg_url()).into(holder.img_url);
-        Log.d("MyCartAdapter", "MyCartModel at position " + position + ": " + cartModel.getAnimalName() + ", " + cartModel.getAnimalType() + ", " + cartModel.getCurrentDate() + ", " + cartModel.getCurrentTime() + ", " + cartModel.getimg_url() + ", " + cartModel.getAnimalId());
+        Glide.with(context).load(cartModel.getimg_url()).into(holder.img_url);
+        holder.name.setText(cartModel.getAnimalName());
+        holder.type.setText(cartModel.getAnimalType());
+        holder.date.setText(cartModel.getCurrentDate());
+        holder.time.setText(cartModel.getCurrentTime());
 
-        holder.name.setText(cartModelList.get(position).getAnimalName());
-        holder.type.setText(cartModelList.get(position).getAnimalType());
-        holder.date.setText(cartModelList.get(position).getCurrentDate());
-        holder.time.setText(cartModelList.get(position).getCurrentTime());
+        holder.deleteItem.setOnClickListener(v -> showDeleteConfirmationDialog(position));
 
-        holder.deleteItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDeleteConfirmationDialog(position);
-            }
-        });
-
-        holder.updateItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showUpdateDialog(position);
-            }
-        });
+        holder.updateItem.setOnClickListener(v -> showUpdateDialog(position));
 
         if (cartModel.isAdopted()) {
             holder.adoptButton.setEnabled(false);
@@ -85,6 +74,17 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
         } else {
             holder.adoptButton.setEnabled(true);
             holder.adoptButton.setText("Udomi sad");
+            holder.adoptButton.setOnClickListener(view -> {
+                int adapterPosition = holder.getAdapterPosition();
+                if (adapterPosition != RecyclerView.NO_POSITION) {
+                    MyCartModel selectedAnimal = cartModelList.get(adapterPosition);
+                    if (!selectedAnimal.isAdopted()) {
+                        checkIfUserIsAdmin(selectedAnimal, adapterPosition);
+                    } else {
+                        Toast.makeText(context, "Životinja je već udomljena.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
     }
 
@@ -93,19 +93,9 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
         builder.setTitle("Potvrda brisanja");
         builder.setMessage("Jeste li sigurni da želite izbrisati ovu stavku iz liste?");
 
-        builder.setPositiveButton("Da", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                deleteItem(position);
-            }
-        });
+        builder.setPositiveButton("Da", (dialog, which) -> deleteItem(position));
 
-        builder.setNegativeButton("Ne", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Do nothing or handle accordingly
-            }
-        });
+        builder.setNegativeButton("Ne", (dialog, which) -> dialog.dismiss());
 
         builder.show();
     }
@@ -114,73 +104,55 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
         firestore.collection("AnimalsForAdoption")
                 .document(cartModelList.get(position).getAnimalId())
                 .delete()
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            cartModelList.remove(position); // Use 'position' instead of 'cartModelList.get(position)'
-                            notifyDataSetChanged();
-                            Toast.makeText(context, "Lista izbrisana", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(context, "Greška: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        cartModelList.remove(position);
+                        notifyDataSetChanged();
+                        Toast.makeText(context, "Lista izbrisana", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(context, "Greška: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-        private void showUpdateDialog(int position) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            LayoutInflater inflater = LayoutInflater.from(context);
-            View view = inflater.inflate(R.layout.update_dialog, null);
-            builder.setView(view);
+    private void showUpdateDialog(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        View view = LayoutInflater.from(context).inflate(R.layout.update_dialog, null);
+        builder.setView(view);
 
-            EditText edtName = view.findViewById(R.id.edt_updated_name);
-            EditText edtType = view.findViewById(R.id.edt_updated_type);
-            EditText edtDate = view.findViewById(R.id.edt_updated_date);
-            EditText edtTime = view.findViewById(R.id.edt_updated_time);
-            EditText edtimg_url = view.findViewById(R.id.edt_updated_img_url);
+        EditText edtName = view.findViewById(R.id.edt_updated_name);
+        EditText edtType = view.findViewById(R.id.edt_updated_type);
+        EditText edtDate = view.findViewById(R.id.edt_updated_date);
+        EditText edtTime = view.findViewById(R.id.edt_updated_time);
+        EditText edtimg_url = view.findViewById(R.id.edt_updated_img_url);
 
-            // Set the existing values to EditTexts
-            MyCartModel cartModel = cartModelList.get(position);
-            edtName.setText(cartModel.getAnimalName());
-            edtType.setText(cartModel.getAnimalType());
-            edtDate.setText(cartModel.getCurrentDate());
-            edtTime.setText(cartModel.getCurrentTime());
-            edtimg_url.setText(cartModel.getimg_url());
+        MyCartModel cartModel = cartModelList.get(position);
+        edtName.setText(cartModel.getAnimalName());
+        edtType.setText(cartModel.getAnimalType());
+        edtDate.setText(cartModel.getCurrentDate());
+        edtTime.setText(cartModel.getCurrentTime());
+        edtimg_url.setText(cartModel.getimg_url());
 
-            builder.setPositiveButton("Ažuriraj", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    String updatedName = edtName.getText().toString().trim();
-                    String updatedType = edtType.getText().toString().trim();
-                    String updatedDate = edtDate.getText().toString().trim();
-                    String updatedTime = edtTime.getText().toString().trim();
-                    String updatedimg_url = edtimg_url.getText().toString().trim();
+        builder.setPositiveButton("Ažuriraj", (dialog, which) -> {
+            String updatedName = edtName.getText().toString().trim();
+            String updatedType = edtType.getText().toString().trim();
+            String updatedDate = edtDate.getText().toString().trim();
+            String updatedTime = edtTime.getText().toString().trim();
+            String updatedimg_url = edtimg_url.getText().toString().trim();
 
-                    // Check if any field is empty
-                    if (TextUtils.isEmpty(updatedName) || TextUtils.isEmpty(updatedType) ||
-                            TextUtils.isEmpty(updatedDate) || TextUtils.isEmpty(updatedTime)) {
-                        Toast.makeText(context, "Molimo popunite sva polja", Toast.LENGTH_SHORT).show();
-                    } else {
-                        // Update Firestore document
-                        updateFirestoreDocument(position, updatedName, updatedType, updatedDate, updatedTime, updatedimg_url);
-                    }
-                }
-            });
+            if (TextUtils.isEmpty(updatedName) || TextUtils.isEmpty(updatedType) || TextUtils.isEmpty(updatedDate) || TextUtils.isEmpty(updatedTime)) {
+                Toast.makeText(context, "Molimo popunite sva polja", Toast.LENGTH_SHORT).show();
+            } else {
+                updateFirestoreDocument(position, updatedName, updatedType, updatedDate, updatedTime, updatedimg_url);
+            }
+        });
 
-            builder.setNegativeButton("Odustani", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
+        builder.setNegativeButton("Odustani", (dialog, which) -> dialog.dismiss());
 
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        }
+        builder.create().show();
+    }
 
     private void updateFirestoreDocument(int position, String updatedName, String updatedType, String updatedDate, String updatedTime, String updatedimg_url) {
-        // Update Firestore document with the new information
         MyCartModel cartModel = cartModelList.get(position);
 
         Map<String, Object> updateData = new HashMap<>();
@@ -193,26 +165,95 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
         firestore.collection("AnimalsForAdoption")
                 .document(cartModel.getAnimalId())
                 .update(updateData)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            // Update the corresponding item in the list
-                            cartModel.setAnimalName(updatedName);
-                            cartModel.setAnimalType(updatedType);
-                            cartModel.setCurrentDate(updatedDate);
-                            cartModel.setCurrentTime(updatedTime);
-                            cartModel.setimg_url(updatedimg_url);
-
-                            // Notify the adapter that the data has changed
-                            notifyDataSetChanged();
-
-                            Toast.makeText(context, "Lista ažurirana", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(context, "Greška: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        cartModel.setAnimalName(updatedName);
+                        cartModel.setAnimalType(updatedType);
+                        cartModel.setCurrentDate(updatedDate);
+                        cartModel.setCurrentTime(updatedTime);
+                        cartModel.setimg_url(updatedimg_url);
+                        notifyDataSetChanged();
+                        Toast.makeText(context, "Lista ažurirana", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(context, "Greška: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void checkIfUserIsAdmin(final MyCartModel selectedAnimal, final int adapterPosition) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            firestore.collection("Korisnici").document(user.getUid())
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists() && Boolean.TRUE.equals(document.getBoolean("isAdmin"))) {
+                                Log.d("MyCartAdapter", "User is admin");
+                                showAdoptionDialog(selectedAnimal, adapterPosition);
+                            } else {
+                                Log.d("MyCartAdapter", "User is not admin");
+                                Toast.makeText(context, "Samo admini mogu udomljavati životinje.", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Log.e("MyCartAdapter", "Error checking admin status", task.getException());
+                            Toast.makeText(context, "Greška pri provjeri statusa admina", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } else {
+            Toast.makeText(context, "Nije moguće provjeriti status admina", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    public interface OnAdminCheckListener {
+        void onAdminChecked(boolean isAdmin);
+    }
+
+    private void showAdoptionDialog(MyCartModel selectedAnimal, int position) {
+        firestore.collection("Korisnici").whereEqualTo("isAdmin", false)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<String> adopterNames = new ArrayList<>();
+                    Map<String, UserModel> adoptersMap = new HashMap<>();
+
+                    for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
+                        UserModel userModel = snapshot.toObject(UserModel.class);
+                        if (userModel != null && !userModel.getIsAdmin()) { // Provjerite isAdmin
+                            adopterNames.add(userModel.getName());
+                            adoptersMap.put(snapshot.getId(), userModel);
+                        }
+                    }
+
+                    if (adopterNames.isEmpty()) {
+                        Toast.makeText(context, "Trenutno nema dostupnih udomitelja.", Toast.LENGTH_SHORT).show();
+                        return; // Prekid izvođenja ako nema korisnika
+                    }
+
+                    CharSequence[] adoptersArray = adopterNames.toArray(new CharSequence[0]);
+                    new AlertDialog.Builder(context)
+                            .setTitle("Odaberite udomitelja")
+                            .setItems(adoptersArray, (dialog, which) -> {
+                                String selectedUserId = (String) adoptersMap.keySet().toArray()[which];
+                                UserModel selectedAdopter = adoptersMap.get(selectedUserId);
+                                if (selectedAdopter != null) {
+                                    adoptAnimal(selectedAnimal.getAnimalId(), selectedUserId, selectedAdopter.getName());
+                                }
+                            })
+                            .show();
+                })
+                .addOnFailureListener(e -> Toast.makeText(context, "Ne može se dohvatiti lista udomitelja: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    private void adoptAnimal(String animalId, String adopterId, String adopterName) {
+        Map<String, Object> adoptionUpdates = new HashMap<>();
+        adoptionUpdates.put("udomljeno", true);
+        adoptionUpdates.put("udomiteljId", adopterId);
+
+        firestore.collection("AnimalsForAdoption").document(animalId)
+                .update(adoptionUpdates)
+                .addOnSuccessListener(aVoid -> Toast.makeText(context, "Životinja je udomljena za korisnika " + adopterName, Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(context, "Udomljavanje nije uspjelo: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     @Override
@@ -220,13 +261,13 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
         return cartModelList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView name,type,date,time;
+        TextView name, type, date, time;
         ImageView img_url;
-        ImageView deleteItem;
-        ImageView updateItem;
+        ImageView deleteItem, updateItem;
         Button adoptButton;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -238,62 +279,6 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
             deleteItem = itemView.findViewById(R.id.delete);
             updateItem = itemView.findViewById(R.id.update);
             adoptButton = itemView.findViewById(R.id.adoptButton);
-
-            adoptButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        MyCartModel selectedAnimal = cartModelList.get(position);
-                        showAdoptionDialog(selectedAnimal, position);
-                    }
-                }
-            });
-        }
-
-        private void showAdoptionDialog(MyCartModel selectedAnimal, int position) {
-            // Ovdje ćemo pretpostaviti da imate metodu koja dohvaća listu mogućih udomitelja iz Firebase-a.
-            // Kada dohvatite listu, prikažite AlertDialog sa svim udomiteljima.
-            List<String> adopterNames = new ArrayList<>(); // Ovo trebate napuniti stvarnim podacima
-            // Dohvatite listu udomitelja iz Firebase-a i napunite adopterNames.
-
-            CharSequence[] adoptersArray = adopterNames.toArray(new CharSequence[0]);
-            new AlertDialog.Builder(context)
-                    .setTitle("Odaberite udomitelja")
-                    .setItems(adoptersArray, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // 'which' je indeks odabranog udomitelja. Ovdje ćemo pretpostaviti da imate ID-eve udomitelja.
-                            String adopterId = "ID_od_adoptera"; // Ovdje bi trebali umetnuti stvarni ID odabranog udomitelja
-                            adoptAnimal(selectedAnimal, adopterId, position);
-                        }
-                    })
-                    .show();
-        }
-
-        private void adoptAnimal(MyCartModel animal, String adopterId, int position) {
-            Map<String, Object> adoptionUpdates = new HashMap<>();
-            adoptionUpdates.put("adopted", true); // Pretpostavljamo da imate 'adopted' polje u Firestore dokumentu
-            adoptionUpdates.put("adopterId", adopterId); // I 'adopterId' polje u Firestore dokumentu
-
-            firestore.collection("AnimalsForAdoption").document(animal.getAnimalId())
-                    .update(adoptionUpdates)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            // Ažuriranje UI-a nakon uspješnog udomljavanja
-                            Toast.makeText(context, "Životinja je udomljena!", Toast.LENGTH_SHORT).show();
-                            animal.setAdopted(true); // Ovdje ažuriramo model da je životinja udomljena
-                            notifyItemChanged(position); // Obavještavamo adapter da je došlo do promjene
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            // U slučaju neuspjeha, prikazujemo poruku o grešci
-                            Toast.makeText(context, "Udomljavanje nije uspjelo: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
         }
     }
 }

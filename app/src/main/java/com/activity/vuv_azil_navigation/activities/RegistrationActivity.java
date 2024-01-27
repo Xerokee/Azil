@@ -103,7 +103,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         progressBar.setVisibility(View.GONE);
                         if (task.isSuccessful()) {
                             // Stvaramo novi UserModel objekt
-                            UserModel userModel = new UserModel(userName, userEmail, userPassword);
+                            UserModel userModel = new UserModel(userName, userEmail, userPassword, false);
 
                             // Dohvaćamo ID autentificiranog korisnika
                             String id = task.getResult().getUser().getUid();
