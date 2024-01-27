@@ -58,6 +58,13 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         MyCartModel cartModel = cartModelList.get(position);
+
+        if (cartModel.getimg_url() != null && !cartModel.getimg_url().isEmpty()) {
+            Glide.with(context).load(cartModel.getimg_url()).into(holder.img_url);
+        } else {
+            holder.img_url.setImageResource(R.drawable.profile);
+        }
+
         Glide.with(context).load(cartModel.getimg_url()).into(holder.img_url);
         holder.name.setText(cartModel.getAnimalName());
         holder.type.setText(cartModel.getAnimalType());
@@ -215,30 +222,27 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<String> adopterNames = new ArrayList<>();
-                    Map<String, UserModel> adoptersMap = new HashMap<>();
+                    List<String> adopterIds = new ArrayList<>();
 
                     for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
                         UserModel userModel = snapshot.toObject(UserModel.class);
-                        if (userModel != null && !userModel.getIsAdmin()) { // Provjerite isAdmin
+                        if (userModel != null && !userModel.getIsAdmin()) {
                             adopterNames.add(userModel.getName());
-                            adoptersMap.put(snapshot.getId(), userModel);
+                            adopterIds.add(snapshot.getId());
                         }
                     }
 
                     if (adopterNames.isEmpty()) {
                         Toast.makeText(context, "Trenutno nema dostupnih udomitelja.", Toast.LENGTH_SHORT).show();
-                        return; // Prekid izvođenja ako nema korisnika
+                        return; // Exit if there are no adopters
                     }
 
                     CharSequence[] adoptersArray = adopterNames.toArray(new CharSequence[0]);
                     new AlertDialog.Builder(context)
                             .setTitle("Odaberite udomitelja")
                             .setItems(adoptersArray, (dialog, which) -> {
-                                String selectedUserId = (String) adoptersMap.keySet().toArray()[which];
-                                UserModel selectedAdopter = adoptersMap.get(selectedUserId);
-                                if (selectedAdopter != null) {
-                                    adoptAnimal(selectedAnimal.getAnimalId(), selectedUserId, selectedAdopter.getName());
-                                }
+                                String selectedUserId = adopterIds.get(which);
+                                adoptAnimal(selectedAnimal.getAnimalId(), selectedUserId, adopterNames.get(which));
                             })
                             .show();
                 })
@@ -247,14 +251,15 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
 
     private void adoptAnimal(String animalId, String adopterId, String adopterName) {
         Map<String, Object> adoptionUpdates = new HashMap<>();
-        adoptionUpdates.put("udomljeno", true);
-        adoptionUpdates.put("udomiteljId", adopterId);
+        adoptionUpdates.put("adopted", true);
+        adoptionUpdates.put("adopterId", adopterId);
 
         firestore.collection("AnimalsForAdoption").document(animalId)
                 .update(adoptionUpdates)
                 .addOnSuccessListener(aVoid -> Toast.makeText(context, "Životinja je udomljena za korisnika " + adopterName, Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(context, "Udomljavanje nije uspjelo: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
+
 
     @Override
     public int getItemCount() {

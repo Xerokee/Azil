@@ -62,6 +62,7 @@ public class MyOrdersFragment extends Fragment {
                     adoptedAnimalsList.clear();
                     for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
                         AnimalModel animal = snapshot.toObject(AnimalModel.class);
+                        Log.d("AdopterInfo", "Animal ID: " + animal.getAnimalId() + " Adopter ID: " + animal.getAdopterId());
                         adoptedAnimalsList.add(animal);
                     }
                     adapter.notifyDataSetChanged();
