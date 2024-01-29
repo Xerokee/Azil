@@ -74,25 +74,11 @@
                 android:layout_marginLeft="7dp"
                 android:layout_marginRight="7dp"
                 android:background="@color/purple_200"
-                app:layout_constraintBottom_toTopOf="@+id/buy_now"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.461"
                 app:layout_constraintVertical_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView7" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/buy_now"
-                android:layout_width="350dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/btn_bg_detailed"
-                android:text="Udomi sad"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                app:layout_constraintTop_toBottomOf="@+id/recyclerview"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_margin="10dp"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

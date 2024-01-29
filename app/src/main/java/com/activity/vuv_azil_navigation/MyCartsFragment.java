@@ -81,7 +81,8 @@ public class MyCartsFragment extends Fragment {
                             cartAdapter.notifyDataSetChanged();
                             recyclerView.setVisibility(View.VISIBLE);
                         } else {
-                            // Handle the error
+                            // Log the error
+                            Log.e("MyCartsFragment", "Error fetching documents: ", task.getException());
                             Toast.makeText(getActivity(), "Greška: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }

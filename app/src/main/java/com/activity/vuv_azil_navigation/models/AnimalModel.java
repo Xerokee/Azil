@@ -8,27 +8,30 @@ public class AnimalModel {
     private String animalType;
     private String currentDate;
     private String currentTime;
-    private String imgUrl;
+    private String img_url;
     private boolean isAdopted;
     private String adopterId;
     private String adopterName;
+    private String documentId;
 
     public AnimalModel() {
         // Default constructor required for calls to DataSnapshot.getValue(AnimalModel.class)
     }
 
-    public AnimalModel(String animalId, String animalName, String animalType, String imgUrl, boolean isAdopted) {
+    public AnimalModel(String animalId, String animalName, String animalType, String img_url, boolean isAdopted) {
         this.animalId = animalId;
         this.animalName = animalName;
         this.animalType = animalType;
-        this.imgUrl = imgUrl;
+        this.img_url = img_url;
         this.isAdopted = isAdopted;
     }
 
+    @PropertyName("animalId")
     public String getAnimalId() {
         return animalId;
     }
 
+    @PropertyName("animalId")
     public void setAnimalId(String animalId) {
         this.animalId = animalId;
     }
@@ -70,13 +73,13 @@ public class AnimalModel {
     }
 
     @PropertyName("img_url")
-    public String getImgUrl() {
-        return imgUrl;
+    public String getImg_url() {
+        return img_url;
     }
 
     @PropertyName("img_url")
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
+    public void setImg_url(String img_url) {
+        this.img_url = img_url;
     }
 
     @PropertyName("adopted")
@@ -106,5 +109,9 @@ public class AnimalModel {
     public void setAdopterName(String adopterName) {
         this.adopterName = adopterName;
     }
+
+    public String getDocumentId() { return documentId; }
+
+    public void setDocumentId(String documentId) { this.documentId = documentId; }
 }
 

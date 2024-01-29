@@ -157,12 +157,29 @@
                 android:id="@+id/tvAdoptedStatus"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
                 android:layout_weight="1"
-                android:layout_marginTop="4dp"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"
                 android:text="Udomljeno"
-                android:textStyle="bold"/>
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <Button
+                android:id="@+id/returnButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Vrati Životinju"
+                android:textSize="20dp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/alice"/>
 
         </LinearLayout>
     </LinearLayout>

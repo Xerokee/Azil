@@ -32,8 +32,6 @@ import java.util.UUID;
 
 public class DetailedActivity extends AppCompatActivity {
 
-    TextView quantity;
-
     ImageView detailedImg;
     TextView rating,description;
     Button addToCart;

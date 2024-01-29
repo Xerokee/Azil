@@ -6,8 +6,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,9 +18,16 @@ import com.activity.vuv_azil_navigation.R;
 import com.activity.vuv_azil_navigation.models.AnimalModel;
 import com.activity.vuv_azil_navigation.models.UserModel;
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Transaction;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnimalsAdapter.ViewHolder> {
     private Context context;
@@ -41,8 +50,12 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
         AnimalModel animal = adoptedAnimalsList.get(position);
         holder.animalName.setText(animal.getAnimalName());
         holder.animalType.setText(animal.getAnimalType());
-        Glide.with(context).load(animal.getImgUrl()).into(holder.animalImage);
+        Glide.with(context).load(animal.getImg_url()).into(holder.animalImage);
         holder.tvAdoptedStatus.setText(animal.isAdopted() ? "Udomljeno" : "Dostupno za udomljavanje");
+        holder.returnButton.setOnClickListener(v -> {
+            String documentId = adoptedAnimalsList.get(position).getDocumentId(); // Koristite documentId
+            returnAnimal(documentId, position);
+        });
 
         getAdopterNameById(animal.getAdopterId(), holder.adopterName);
     }
@@ -55,6 +68,7 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView animalName, animalType, tvAdoptedStatus, adopterName;
         ImageView animalImage;
+        Button returnButton;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -63,6 +77,7 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
             animalImage = itemView.findViewById(R.id.imageViewAnimal);
             tvAdoptedStatus = itemView.findViewById(R.id.tvAdoptedStatus);
             adopterName = itemView.findViewById(R.id.textViewAdopterName);
+            returnButton = itemView.findViewById(R.id.returnButton); // Dodajemo gumb za vraćanje
         }
     }
 
@@ -94,6 +109,36 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
                     adopterNameTextView.setText("Nepoznato");
                     Log.e("AdopterInfo", "Error fetching adopter info", e);
                 });
+    }
+
+    private void returnAnimal(String documentId, int position) {
+        if (documentId == null) {
+            Log.e("ReturnAnimal", "Document ID is null for position: " + position);
+            Toast.makeText(context, "Error: Document ID is null.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.collection("AnimalsForAdoption").document(documentId);
+
+        db.runTransaction((Transaction.Function<Void>) transaction -> {
+            DocumentSnapshot animalSnapshot = transaction.get(docRef);
+            if (animalSnapshot.exists() && animalSnapshot.getBoolean("adopted")) {
+                transaction.update(docRef, "adopted", false);
+                transaction.update(docRef, "adopterId", FieldValue.delete());
+                Log.d("ReturnAnimal", "Animal with ID: " + documentId + " has been returned.");
+            } else {
+                throw new FirebaseFirestoreException("No such document to update or animal is not adopted",
+                        FirebaseFirestoreException.Code.ABORTED);
+            }
+            return null;
+        }).addOnSuccessListener(aVoid -> {
+            adoptedAnimalsList.remove(position); // Uklanja element iz liste
+            notifyItemRemoved(position); // Obavještava adapter o promjeni
+            Toast.makeText(context, "Životinja je vraćena u azil", Toast.LENGTH_SHORT).show();
+        }).addOnFailureListener(e -> {
+            Log.e("ReturnAnimal", "Failed to return animal with ID: " + documentId, e);
+            Toast.makeText(context, "Greška pri vraćanju: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
     }
 }
 

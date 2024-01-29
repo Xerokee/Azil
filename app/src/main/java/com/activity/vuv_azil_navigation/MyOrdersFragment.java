@@ -54,16 +54,17 @@ public class MyOrdersFragment extends Fragment {
     }
 
     private void fetchAdoptedAnimals() {
-        // Your logic to fetch animals
         FirebaseFirestore.getInstance().collection("AnimalsForAdoption")
-                .whereEqualTo("udomljeno", true)
+                .whereEqualTo("adopted", true)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     adoptedAnimalsList.clear();
                     for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
                         AnimalModel animal = snapshot.toObject(AnimalModel.class);
-                        Log.d("AdopterInfo", "Animal ID: " + animal.getAnimalId() + " Adopter ID: " + animal.getAdopterId());
-                        adoptedAnimalsList.add(animal);
+                        if (animal != null) {
+                            animal.setDocumentId(snapshot.getId()); // Set the document ID here
+                            adoptedAnimalsList.add(animal);
+                        }
                     }
                     adapter.notifyDataSetChanged();
 
