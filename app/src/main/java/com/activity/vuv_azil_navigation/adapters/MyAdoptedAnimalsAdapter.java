@@ -1,6 +1,7 @@
 // MyAdoptedAnimalsAdapter.java
 package com.activity.vuv_azil_navigation.adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,8 +17,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.vuv_azil_navigation.R;
 import com.activity.vuv_azil_navigation.models.AnimalModel;
+import com.activity.vuv_azil_navigation.models.MyCartModel;
 import com.activity.vuv_azil_navigation.models.UserModel;
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -32,6 +36,7 @@ import java.util.Map;
 public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnimalsAdapter.ViewHolder> {
     private Context context;
     private List<AnimalModel> adoptedAnimalsList;
+    FirebaseFirestore firestore;
 
     public MyAdoptedAnimalsAdapter(Context context, List<AnimalModel> adoptedAnimalsList) {
         this.context = context;
@@ -54,7 +59,7 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
         holder.tvAdoptedStatus.setText(animal.isAdopted() ? "Udomljeno" : "Dostupno za udomljavanje");
         holder.returnButton.setOnClickListener(v -> {
             String documentId = adoptedAnimalsList.get(position).getDocumentId(); // Koristite documentId
-            returnAnimal(documentId, position);
+            checkIfUserIsAdmin(documentId, position, () -> returnAnimal(documentId, position));
         });
 
         getAdopterNameById(animal.getAdopterId(), holder.adopterName);
@@ -79,6 +84,36 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
             adopterName = itemView.findViewById(R.id.textViewAdopterName);
             returnButton = itemView.findViewById(R.id.returnButton); // Dodajemo gumb za vraćanje
         }
+    }
+
+    private void checkIfUserIsAdmin(String documentId, int position, Runnable onAdminAction) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            FirebaseFirestore.getInstance().collection("Korisnici").document(user.getUid())
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists() && Boolean.TRUE.equals(document.getBoolean("isAdmin"))) {
+                                onAdminAction.run(); // If user is admin, perform the admin action
+                            } else {
+                                showAdminOnlyDialog(); // If user is not admin, show admin only dialog
+                            }
+                        } else {
+                            Toast.makeText(context, "Greška pri provjeri statusa admina", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } else {
+            Toast.makeText(context, "Niste prijavljeni.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void showAdminOnlyDialog() {
+        new AlertDialog.Builder(context)
+                .setTitle("Administratorska Akcija")
+                .setMessage("Samo admini mogu vraćati životinje.")
+                .setPositiveButton("OK", (dialogInterface, i) -> dialogInterface.dismiss())
+                .show();
     }
 
     private void getAdopterNameById(String adopterId, final TextView adopterNameTextView) {
@@ -139,6 +174,12 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
             Log.e("ReturnAnimal", "Failed to return animal with ID: " + documentId, e);
             Toast.makeText(context, "Greška pri vraćanju: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         });
+    }
+
+    public void updateList(List<AnimalModel> newList) {
+        adoptedAnimalsList.clear();
+        adoptedAnimalsList.addAll(newList);
+        notifyDataSetChanged();
     }
 }
 

@@ -71,9 +71,15 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
         holder.date.setText(cartModel.getCurrentDate());
         holder.time.setText(cartModel.getCurrentTime());
 
-        holder.deleteItem.setOnClickListener(v -> showDeleteConfirmationDialog(position));
+        holder.deleteItem.setOnClickListener(v -> checkIfUserIsAdminThenRun(
+                () -> showDeleteConfirmationDialog(position),
+                () -> Toast.makeText(context, "Samo admini mogu brisati životinje.", Toast.LENGTH_SHORT).show()
+        ));
 
-        holder.updateItem.setOnClickListener(v -> showUpdateDialog(position));
+        holder.updateItem.setOnClickListener(v -> checkIfUserIsAdminThenRun(
+                () -> showUpdateDialog(position),
+                () -> Toast.makeText(context, "Samo admini mogu ažurirati životinje.", Toast.LENGTH_SHORT).show()
+        ));
 
         if (cartModel.isAdopted()) {
             holder.adoptButton.setEnabled(false);
@@ -92,6 +98,24 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
                     }
                 }
             });
+        }
+    }
+
+    private void checkIfUserIsAdminThenRun(Runnable onAdmin, Runnable onNonAdmin) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            FirebaseFirestore.getInstance().collection("Korisnici").document(user.getUid())
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists() && Boolean.TRUE.equals(documentSnapshot.getBoolean("isAdmin"))) {
+                            onAdmin.run();
+                        } else {
+                            onNonAdmin.run();
+                        }
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(context, "Greška pri provjeri statusa admina", Toast.LENGTH_SHORT).show());
+        } else {
+            Toast.makeText(context, "Niste prijavljeni.", Toast.LENGTH_SHORT).show();
         }
     }
 

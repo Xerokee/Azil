@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 
 import com.activity.vuv_azil_navigation.R;
 import com.activity.vuv_azil_navigation.models.ViewAllModel;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -62,31 +64,32 @@ public class NewProductsFragment extends Fragment {
     }
 
     private void addNewAnimal() {
-        String name = etName.getText().toString().trim();
-        String description = etDescription.getText().toString().trim();
-        String rating = etRating.getText().toString().trim();
-        String imgUrl = etImgUrl.getText().toString().trim();
-        String type = etType.getText().toString().trim();
+        checkIfUserIsAdmin(() -> {
+            String name = etName.getText().toString().trim();
+            String description = etDescription.getText().toString().trim();
+            String rating = etRating.getText().toString().trim();
+            String imgUrl = etImgUrl.getText().toString().trim();
+            String type = etType.getText().toString().trim();
 
-        Log.d("NewProductsFragment", "Uneseni podaci: " +
-                "Ime: " + name +
-                ", Opis: " + description +
-                ", Ocjena: " + rating +
-                ", URL slike: " + imgUrl +
-                ", Tip: " + type);
+            Log.d("NewProductsFragment", "Uneseni podaci: " +
+                    "Ime: " + name +
+                    ", Opis: " + description +
+                    ", Ocjena: " + rating +
+                    ", URL slike: " + imgUrl +
+                    ", Tip: " + type);
 
-        if (name.isEmpty() || description.isEmpty() || rating.isEmpty() || imgUrl.isEmpty() || type.isEmpty()) {
-            Toast.makeText(getContext(), "Molimo ispunite sve podatke", Toast.LENGTH_SHORT).show();
-            return;
-        }
+            if (name.isEmpty() || description.isEmpty() || rating.isEmpty() || type.isEmpty()) {
+                Toast.makeText(getContext(), "Molimo ispunite sve podatke", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-        try {
-            Float.parseFloat(rating); // Provjerite je li ocjena valjan broj
-        } catch (NumberFormatException e) {
-            Log.e("NewProductsFragment", "Greška pri provjeri ocjene: " + e.getMessage());
-            Toast.makeText(getContext(), "Ocjena mora biti broj", Toast.LENGTH_SHORT).show();
-            return;
-        }
+            try {
+                Float.parseFloat(rating); // Provjerite je li ocjena valjan broj
+            } catch (NumberFormatException e) {
+                Log.e("NewProductsFragment", "Greška pri provjeri ocjene: " + e.getMessage());
+                Toast.makeText(getContext(), "Ocjena mora biti broj", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
         ViewAllModel newAnimal = new ViewAllModel(name, description, rating, imgUrl, type);
         FirebaseFirestore.getInstance().collection("AllAnimals")
@@ -100,6 +103,27 @@ public class NewProductsFragment extends Fragment {
                     Log.e("NewProductsFragment", "Greška pri dodavanju životinje: " + e.getMessage());
                     Toast.makeText(getContext(), "Došlo je do greške: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
+        }, () -> {
+            Toast.makeText(getContext(), "Samo admini mogu dodavati životinje.", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void checkIfUserIsAdmin(Runnable onAdmin, Runnable onNonAdmin) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            FirebaseFirestore.getInstance().collection("Korisnici").document(user.getUid())
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists() && Boolean.TRUE.equals(documentSnapshot.getBoolean("isAdmin"))) {
+                            onAdmin.run();
+                        } else {
+                            onNonAdmin.run();
+                        }
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(getContext(), "Greška pri provjeri statusa admina", Toast.LENGTH_SHORT).show());
+        } else {
+            Toast.makeText(getContext(), "Niste prijavljeni.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void clearForm() {
