@@ -60,8 +60,6 @@ public class MainActivity extends AppCompatActivity {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
 
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_category, R.id.nav_profile,R.id.nav_new_products,
                 R.id.nav_my_orders,R.id.nav_my_carts)
@@ -97,12 +95,9 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
-                            // Handle onCancelled
                         }
                     });
         } else {
-            // Handle the case where UID is null
-            // You might want to sign out the user or redirect to the login screen
         }
     }
 

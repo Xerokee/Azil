@@ -13,9 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.vuv_azil_navigation.R;
 import com.activity.vuv_azil_navigation.adapters.NavCategoryAdapter;
-import com.activity.vuv_azil_navigation.adapters.PopularAdapters;
 import com.activity.vuv_azil_navigation.models.NavCategoryModel;
-import com.activity.vuv_azil_navigation.models.PopularModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;

@@ -23,11 +23,11 @@ import java.util.List;
 public class RecommendedAdapter extends RecyclerView.Adapter<RecommendedAdapter.ViewHolder> {
 
     Context context;
-    List<RecommendedModel> list;
+    List<RecommendedModel> recommendedModelList;
 
-    public RecommendedAdapter(Context context, List<RecommendedModel> list) {
+    public RecommendedAdapter(Context context, List<RecommendedModel> recommendedModelList) {
         this.context = context;
-        this.list = list;
+        this.recommendedModelList = recommendedModelList;
     }
 
     @NonNull
@@ -37,17 +37,25 @@ public class RecommendedAdapter extends RecyclerView.Adapter<RecommendedAdapter.
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecommendedAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Glide.with(context).load(recommendedModelList.get(position).getImg_url()).into(holder.imageView);
+        holder.name.setText(recommendedModelList.get(position).getName());
+        holder.description.setText(recommendedModelList.get(position).getDescription());
+        holder.rating.setText(recommendedModelList.get(position).getRating());
 
-        Glide.with(context).load(list.get(position).getImg_url()).into(holder.imageView);
-        holder.name.setText(list.get(position).getName());
-        holder.description.setText(list.get(position).getDescription());
-        holder.rating.setText(list.get(position).getRating());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ViewAllActivity.class);
+                intent.putExtra("type", recommendedModelList.get(position).getType());
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return recommendedModelList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

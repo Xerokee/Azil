@@ -28,7 +28,6 @@ public class NewProductsFragment extends Fragment {
     private FloatingActionButton fabAddAnimal;
 
     public NewProductsFragment() {
-        // Required empty public constructor
     }
 
     @Override

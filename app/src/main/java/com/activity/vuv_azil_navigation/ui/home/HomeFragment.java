@@ -12,21 +12,18 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.vuv_azil_navigation.R;
 import com.activity.vuv_azil_navigation.adapters.HomeAdapter;
-import com.activity.vuv_azil_navigation.adapters.PopularAdapters;
+import com.activity.vuv_azil_navigation.adapters.PopularAdapter;
 import com.activity.vuv_azil_navigation.adapters.RecommendedAdapter;
 import com.activity.vuv_azil_navigation.adapters.ViewAllAdapter;
-import com.activity.vuv_azil_navigation.databinding.FragmentHomeBinding;
 import com.activity.vuv_azil_navigation.models.HomeCategory;
 import com.activity.vuv_azil_navigation.models.PopularModel;
 import com.activity.vuv_azil_navigation.models.RecommendedModel;
@@ -41,7 +38,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class HomeFragment extends Fragment {
 
@@ -52,7 +48,7 @@ public class HomeFragment extends Fragment {
 
     // Popularne Životinje
     List<PopularModel> popularModelList;
-    PopularAdapters popularAdapters;
+    PopularAdapter popularAdapters;
 
     // Search view
     EditText search_box;
@@ -85,7 +81,7 @@ public class HomeFragment extends Fragment {
         // Popularne životinje
         popularRec.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
         popularModelList = new ArrayList<>();
-        popularAdapters = new PopularAdapters(getActivity(), popularModelList);
+        popularAdapters = new PopularAdapter(getActivity(), popularModelList);
         popularRec.setAdapter(popularAdapters);
 
         db.collection("PopularAnimals")
@@ -226,7 +222,7 @@ public class HomeFragment extends Fragment {
     private void searchAnimal(String keyword) {
         Log.d("HomeFragment", "Searching for: " + keyword);
         db.collection("AllAnimals")
-                .orderBy("name")
+                .orderBy("type")
                 .startAt(keyword)
                 .endAt(keyword + "\uf8ff")
                 .get()

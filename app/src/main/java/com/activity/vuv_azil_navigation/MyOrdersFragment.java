@@ -41,7 +41,6 @@ public class MyOrdersFragment extends Fragment {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_my_orders, container, false);
 
-        // Initialize your TextView and ImageView
         newAnimalsTextView = root.findViewById(R.id.new_animals_textview);
         newAnimalsImageView = root.findViewById(R.id.new_animals_img);
 
@@ -96,7 +95,6 @@ public class MyOrdersFragment extends Fragment {
                     }
                 })
                 .addOnFailureListener(e -> {
-                    // Handle error
                 });
     }
 
