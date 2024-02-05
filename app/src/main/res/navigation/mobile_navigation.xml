@@ -22,11 +22,6 @@
         android:label="@string/kategorija"
         tools:layout="@layout/fragment_category" />
     <fragment
-        android:id="@+id/nav_offers"
-        android:name="com.activity.vuv_azil_navigation.OffersFragment"
-        android:label="Ponude"
-        tools:layout="@layout/fragment_offers" />
-    <fragment
         android:id="@+id/nav_new_products"
         android:name="com.activity.vuv_azil_navigation.NewProductsFragment"
         android:label="Nove Životinje"

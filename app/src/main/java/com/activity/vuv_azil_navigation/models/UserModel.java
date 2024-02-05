@@ -6,6 +6,7 @@ public class UserModel {
     String password;
     String profileImg;
     boolean isAdmin;
+    private String documentId;
 
     public UserModel() {
     }
@@ -54,4 +55,7 @@ public class UserModel {
     public void setIsAdmin(boolean isAdmin) {
         this.isAdmin = isAdmin;
     }
+    public String getDocumentId() { return documentId; }
+
+    public void setDocumentId(String documentId) { this.documentId = documentId; }
 }

@@ -17,10 +17,6 @@
             android:icon="@drawable/ic_baseline_category_24"
             android:title="@string/kategorija" />
         <item
-            android:id="@+id/nav_offers"
-            android:icon="@drawable/ic_baseline_local_offer_24"
-            android:title="@string/ponude" />
-        <item
             android:id="@+id/nav_new_products"
             android:icon="@drawable/autorenew"
             android:title="@string/nove_ivotinje" />

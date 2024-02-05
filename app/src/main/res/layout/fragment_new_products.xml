@@ -1,42 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".NewProductsFragment"
     android:background="@color/white">
 
     <!-- TODO: Update blank fragment layout -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
-        <ImageView
-            app:layout_constraintVertical_bias=".3"
-            android:id="@+id/new_animals_img"
-            android:layout_width="400dp"
-            android:layout_height="300dp"
-            android:src="@mipmap/newanimals"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:textColor="@color/purple_700"
-            app:layout_constraintVertical_bias="0"
-            android:textAlignment="center"
-            android:layout_width="match_parent"
+        <!-- Floating Action Button -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAddAnimal"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/alice"
-            android:text="Žao nam je, trenutno nema novih životinja!"
-            android:textSize="22sp"
+            android:layout_gravity="bottom|end"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/new_animals_img" />
-        
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintTop_toBottomOf="parent" />
 
-</FrameLayout>
+        <!-- Form Container -->
+        <LinearLayout
+            android:id="@+id/animalFormContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fabAddAnimal"
+            app:layout_constraintVertical_bias="1.0">
+
+            <EditText
+                android:id="@+id/editTextName"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Ime životinje"
+                android:textColorHint="@color/purple_700"
+                android:textColor="@color/purple_700"
+                android:inputType="textPersonName" />
+
+            <EditText
+                android:id="@+id/editTextDescription"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Opis"
+                android:textColorHint="@color/purple_700"
+                android:textColor="@color/purple_700"
+                android:inputType="textMultiLine" />
+
+            <EditText
+                android:id="@+id/editTextRating"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Ocjena"
+                android:textColorHint="@color/purple_700"
+                android:textColor="@color/purple_700"
+                android:inputType="numberDecimal"
+                app:layout_constraintTop_toBottomOf="@+id/editTextDescription" />
+
+            <EditText
+                android:id="@+id/editTextImgUrl"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Slika životinje"
+                android:textColorHint="@color/purple_700"
+                android:textColor="@color/purple_700"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/editTextType"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Tip životinje"
+                android:textColorHint="@color/purple_700"
+                android:textColor="@color/purple_700"
+                android:inputType="text" />
+
+            <Button
+                android:id="@+id/buttonSubmitAnimal"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="16dp"
+                android:text="Potvrdi dodavanje"
+                android:textColor="@color/black" />
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

@@ -15,7 +15,6 @@ public class AnimalModel {
     private String documentId;
 
     public AnimalModel() {
-        // Default constructor required for calls to DataSnapshot.getValue(AnimalModel.class)
     }
 
     public AnimalModel(String animalId, String animalName, String animalType, String img_url, boolean isAdopted) {

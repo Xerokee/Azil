@@ -58,7 +58,7 @@ public class MyOrdersFragment extends Fragment {
                 .whereEqualTo("adopted", true)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    adoptedAnimalsList.clear();
+                        adoptedAnimalsList.clear();
                     for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
                         AnimalModel animal = snapshot.toObject(AnimalModel.class);
                         if (animal != null) {
