@@ -41,35 +41,20 @@ public class ViewAllAdapter extends RecyclerView.Adapter<ViewAllAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewAllAdapter.ViewHolder holder, int position) {
         ViewAllModel model = list.get(position);
-        Glide.with(context).load(list.get(position).getImg_url()).into(holder.imageView);
-        holder.name.setText(list.get(position).getName());
-        holder.description.setText(list.get(position).getDescription());
-        holder.rating.setText(list.get(position).getRating());
-        holder.adopterName.setText(list.get(position).getAdopterName());
+        Glide.with(context).load(model.getImg_url()).into(holder.imageView);
+        holder.name.setText(model.getName());
+        holder.description.setText(model.getDescription());
+        holder.rating.setText(model.getRating());
 
-        Log.d("ViewAllAdapter", "Position: " + position + " Name: " + model.getName() + " Adopted: " + model.isAdopted() + " Adopter Name: " + model.getAdopterName());
-
-        if (model.isAdopted() && model.getAdopterId() != null && !model.getAdopterId().isEmpty()) {
-            FirebaseFirestore.getInstance().collection("Korisnici").document(model.getAdopterId())
-                    .get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (model.isAdopted()) {
-                            Log.d("ViewAllAdapter", "Animal at position " + position + " is adopted.");
-                            if (model.getAdopterName() == null || model.getAdopterName().isEmpty()) {
-                                Log.d("ViewAllAdapter", "Adopter name not set, fetching adopter name for " + model.getName());
-                                fetchAdopterName(model.getDocumentId(), holder);
-                            } else {
-                                Log.d("ViewAllAdapter", "Displaying adopter name for " + model.getName());
-                                holder.adopterName.setText("Udomitelj: " + model.getAdopterName());
-                            }
-                        } else {
-                            Log.d("ViewAllAdapter", "Animal at position " + position + " is available for adoption.");
-                            holder.adopterName.setText("Dostupno za udomljavanje");
-                        }
-                    })
-                    .addOnFailureListener(e -> holder.adopterName.setText("Udomitelj: Nepoznato"));
+        if (model.isAdopted()) {
+            holder.adopterName.setVisibility(View.VISIBLE);
+            if (model.getAdopterName() == null || model.getAdopterName().isEmpty()) {
+                fetchAdopterName(model.getAdopterId(), holder.adopterName);
+            } else {
+                holder.adopterName.setText("Udomitelj: " + model.getAdopterName());
+            }
         } else {
-            holder.adopterName.setText("Dostupno za udomljavanje");
+            holder.adopterName.setVisibility(View.GONE);
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -79,49 +64,35 @@ public class ViewAllAdapter extends RecyclerView.Adapter<ViewAllAdapter.ViewHold
         });
     }
 
-    private void fetchAdopterName(String animalId, final ViewHolder holder) {
-        FirebaseFirestore.getInstance().collection("AnimalsForAdoption")
-                .whereEqualTo("animalId", animalId)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        // Assume each animal is unique, therefore, we take the first document.
-                        DocumentSnapshot adoptionDoc = queryDocumentSnapshots.getDocuments().get(0);
-                        String adopterId = adoptionDoc.getString("adopterId");
+    private void fetchAdopterName(String adopterId, final TextView adopterNameTextView) {
+        if (adopterId == null || adopterId.trim().isEmpty()) {
+            adopterNameTextView.setText("Udomitelj: Nepoznato");
+            return;
+        }
 
-                        FirebaseFirestore.getInstance().collection("Korisnici")
-                                .document(adopterId)
-                                .get()
-                                .addOnSuccessListener(adopterSnapshot -> {
-                                    if (adopterSnapshot.exists()) {
-                                        UserModel userModel = adopterSnapshot.toObject(UserModel.class);
-                                        holder.adopterName.setText("Udomitelj: " + userModel.getName());
-                                        // Update the model in the list with adopter's name
-                                        int pos = holder.getAdapterPosition();
-                                        if (pos != RecyclerView.NO_POSITION) {
-                                            list.get(pos).setAdopterName(userModel.getName());
-                                            notifyItemChanged(pos);
-                                        }
-                                    } else {
-                                        holder.adopterName.setText("Udomitelj: Nepoznato");
-                                    }
-                                })
-                                .addOnFailureListener(e -> holder.adopterName.setText("Udomitelj: Nepoznato"));
+        FirebaseFirestore.getInstance().collection("Korisnici").document(adopterId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        UserModel userModel = documentSnapshot.toObject(UserModel.class);
+                        if (userModel != null && userModel.getName() != null) {
+                            adopterNameTextView.setText("Udomitelj: " + userModel.getName());
+                        } else {
+                            adopterNameTextView.setText("Udomitelj: Nepoznato");
+                        }
                     } else {
-                        // If there are no adoption documents, set as not adopted.
-                        holder.adopterName.setText("Dostupno za udomljavanje");
+                        adopterNameTextView.setText("Udomitelj: Nepoznato");
                     }
                 })
-                .addOnFailureListener(e -> holder.adopterName.setText("Udomitelj: Nepoznato"));
+                .addOnFailureListener(e -> adopterNameTextView.setText("Udomitelj: Greška u dohvatu podataka"));
     }
-
 
     @Override
     public int getItemCount() {
         return list.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imageView;
         TextView name,description,rating,adopterName;

@@ -12,6 +12,7 @@ public class MyCartModel {
     String img_url;
     private boolean adopted;
     private String adopterId;
+    private String adopterName;
 
     public MyCartModel() {
     }
@@ -78,4 +79,8 @@ public class MyCartModel {
     public String getAdopterId() { return adopterId; }
 
     public void setAdopterId(String adopterId) { this.adopterId = adopterId; }
+
+    public String getAdopterName() { return adopterName; }
+
+    public void setAdopterName(String adopterName) { this.adopterName = adopterName; }
 }

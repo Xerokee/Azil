@@ -73,6 +73,7 @@ public class ViewAllModel implements Serializable {
         return isAdopted;
     }
 
+    @PropertyName("adopted")
     public void setAdopted(boolean adopted) { this.isAdopted = adopted; }
 
     @PropertyName("adopterId")
@@ -85,8 +86,10 @@ public class ViewAllModel implements Serializable {
         this.adopterId = adopterId;
     }
 
+    @PropertyName("adopterName")
     public String getAdopterName() { return adopterName; }
 
+    @PropertyName("adopterName")
     public void setAdopterName(String adopterName) { this.adopterName = adopterName; }
 
     public String getDocumentId() { return documentId; }

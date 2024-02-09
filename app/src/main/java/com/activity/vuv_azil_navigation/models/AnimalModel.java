@@ -101,10 +101,12 @@ public class AnimalModel {
         this.adopterId = adopterId;
     }
 
+    @PropertyName("adopterName")
     public String getAdopterName() {
         return adopterName;
     }
 
+    @PropertyName("adopterName")
     public void setAdopterName(String adopterName) {
         this.adopterName = adopterName;
     }

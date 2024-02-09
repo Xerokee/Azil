@@ -56,6 +56,15 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
         holder.animalName.setText(animal.getAnimalName());
         holder.animalType.setText(animal.getAnimalType());
         Glide.with(context).load(animal.getImg_url()).into(holder.animalImage);
+
+        if(animal.isAdopted()) {
+            holder.tvAdoptedStatus.setText("Udomljeno");
+            holder.adopterName.setText(animal.getAdopterName());
+        } else {
+            holder.tvAdoptedStatus.setText("Dostupno za udomljavanje");
+            holder.adopterName.setText("");
+        }
+
         holder.tvAdoptedStatus.setText(animal.isAdopted() ? "Udomljeno" : "Dostupno za udomljavanje");
         holder.returnButton.setOnClickListener(v -> {
             String documentId = adoptedAnimalsList.get(position).getDocumentId(); // Koristite documentId
@@ -130,20 +139,14 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
                         UserModel userModel = documentSnapshot.toObject(UserModel.class);
                         if (userModel != null && userModel.getName() != null) {
                             adopterNameTextView.setText(userModel.getName());
-                            Log.d("AdopterInfo", "Adopter name found: " + userModel.getName());
                         } else {
-                            adopterNameTextView.setText("Nepoznato");
-                            Log.d("AdopterInfo", "UserModel is null or name is null");
+                            adopterNameTextView.setText("Udomitelj: Nepoznato");
                         }
                     } else {
-                        adopterNameTextView.setText("Nepoznato");
-                        Log.d("AdopterInfo", "Document does not exist for ID: " + adopterId);
+                        adopterNameTextView.setText("Udomitelj: Nepoznato");
                     }
                 })
-                .addOnFailureListener(e -> {
-                    adopterNameTextView.setText("Nepoznato");
-                    Log.e("AdopterInfo", "Error fetching adopter info", e);
-                });
+                .addOnFailureListener(e -> adopterNameTextView.setText("Udomitelj: Greška u dohvatu podataka"));
     }
 
     private void returnAnimal(String documentId, int position) {

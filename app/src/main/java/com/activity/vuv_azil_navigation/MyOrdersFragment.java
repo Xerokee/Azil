@@ -35,6 +35,8 @@ public class MyOrdersFragment extends Fragment {
     private List<AnimalModel> adoptedAnimalsList;
     private TextView newAnimalsTextView;
     private ImageView newAnimalsImageView;
+    private boolean isSearchSuccessful = false;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,10 +62,14 @@ public class MyOrdersFragment extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.toString().trim().isEmpty()) {
                     fetchAdoptedAnimals();
+                    isSearchSuccessful = false;
                 } else {
                     searchAdoptersByName(s.toString());
                 }
             }
+
+
+
 
             @Override
             public void afterTextChanged(Editable s) {}
@@ -76,15 +82,16 @@ public class MyOrdersFragment extends Fragment {
                 .whereEqualTo("adopted", true)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                        adoptedAnimalsList.clear();
+                    adoptedAnimalsList.clear();
                     for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
                         AnimalModel animal = snapshot.toObject(AnimalModel.class);
                         if (animal != null) {
-                            animal.setDocumentId(snapshot.getId()); // Set the document ID here
+                            animal.setDocumentId(snapshot.getId());
                             adoptedAnimalsList.add(animal);
                         }
                     }
                     adapter.notifyDataSetChanged();
+                    updateUIBasedOnSearchResults(); // Ažuriranje UI nakon ponovnog učitavanja liste
 
                     if (adoptedAnimalsList.isEmpty()) {
                         newAnimalsTextView.setVisibility(View.VISIBLE);
@@ -112,7 +119,7 @@ public class MyOrdersFragment extends Fragment {
                             newAdoptedAnimalsList.add(animal);
                         }
                     }
-                    adapter.updateList(newAdoptedAnimalsList); // Koristimo updateList metodu
+                    adapter.updateList(newAdoptedAnimalsList);
                     updateUIBasedOnSearchResults();
                 })
                 .addOnFailureListener(e -> {
@@ -140,12 +147,14 @@ public class MyOrdersFragment extends Fragment {
                     for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
                         adopterIds.add(snapshot.getId());
                     }
-                    if (adopterIds.isEmpty()) {
+                    if (!adopterIds.isEmpty()) {
+                        fetchAnimalsForAdopters(adopterIds);
+                        isSearchSuccessful = true;
+                    } else {
                         adoptedAnimalsList.clear();
                         adapter.notifyDataSetChanged();
+                        isSearchSuccessful = false;
                         updateUIBasedOnSearchResults();
-                    } else {
-                        fetchAnimalsForAdopters(adopterIds);
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -158,7 +167,7 @@ public class MyOrdersFragment extends Fragment {
 
 
     private void updateUIBasedOnSearchResults() {
-        if (adoptedAnimalsList.isEmpty()) {
+        if (adoptedAnimalsList.isEmpty() && isSearchSuccessful) {
             newAnimalsTextView.setVisibility(View.VISIBLE);
             newAnimalsImageView.setVisibility(View.VISIBLE);
             newAnimalsTextView.setText("Nema pronađenih životinja za odabranog udomitelja.");
@@ -167,7 +176,6 @@ public class MyOrdersFragment extends Fragment {
             newAnimalsImageView.setVisibility(View.GONE);
         }
     }
-
 
     private void fetchAnimalsForAdopters(List<String> adopterIds) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
