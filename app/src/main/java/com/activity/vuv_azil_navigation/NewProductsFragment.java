@@ -35,6 +35,30 @@ public class NewProductsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_new_products, container, false);
 
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = auth.getCurrentUser();
+
+        if (currentUser != null) {
+            FirebaseFirestore.getInstance().collection("Korisnici").document(currentUser.getUid())
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists() && Boolean.TRUE.equals(documentSnapshot.getBoolean("isAdmin"))) {
+                            // Ako je korisnik admin, prikaži UI za dodavanje novih životinja
+                            fabAddAnimal.setVisibility(View.VISIBLE);
+                        } else {
+                            // Ako korisnik nije admin, sakrij UI
+                            fabAddAnimal.setVisibility(View.GONE);
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        // Obrada greške
+                        Log.e("NewProductsFragment", "Error getting user admin status", e);
+                    });
+        } else {
+            // Korisnik nije prijavljen
+            fabAddAnimal.setVisibility(View.GONE);
+        }
+
         etName = root.findViewById(R.id.editTextName);
         etDescription = root.findViewById(R.id.editTextDescription);
         etRating = root.findViewById(R.id.editTextRating);

@@ -28,7 +28,6 @@ import com.activity.vuv_azil_navigation.models.UserModel;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -200,36 +199,20 @@ public class ProfileFragment extends Fragment {
 
         String uid = currentUser.getUid();
         String newName = name.getText().toString().trim();
-        String newEmail = email.getText().toString().trim();
-        String newPassword = password.getText().toString().trim();
 
-        updateUserEmailAndName(currentUser, newEmail, newName, uid);
+        Map<String, Object> userUpdates = new HashMap<>();
+        userUpdates.put("name", newName);
 
-        if (!newPassword.isEmpty()) {
-            currentUser.updatePassword(newPassword)
-                    .addOnSuccessListener(aVoid -> Toast.makeText(getContext(), "Lozinka ažurirana", Toast.LENGTH_SHORT).show())
-                    .addOnFailureListener(e -> Toast.makeText(getContext(), "Greška: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-        }
-    }
-
-    private void updateUserEmailAndName(FirebaseUser currentUser, String newEmail, String newName, String uid) {
-        currentUser.updateEmail(newEmail)
-                .addOnSuccessListener(aVoid -> {
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    Map<String, Object> userUpdates = new HashMap<>();
-                    userUpdates.put("name", newName);
-                    userUpdates.put("email", newEmail);
-
-                    db.collection("Korisnici").document(uid)
-                            .update(userUpdates)
-                            .addOnSuccessListener(unused -> {
-                                Toast.makeText(getContext(), "Profil ažuriran", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(ACTION_PROFILE_UPDATED);
-                                LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
-                            })
-                            .addOnFailureListener(e -> Toast.makeText(getContext(), "Greška: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-                });
-    }
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Korisnici").document(uid)
+                .update(userUpdates)
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(getContext(), "Profil ažuriran", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(ACTION_PROFILE_UPDATED);
+                    LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+                })
+                .addOnFailureListener(e -> Toast.makeText(getContext(), "Greška: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+}
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
