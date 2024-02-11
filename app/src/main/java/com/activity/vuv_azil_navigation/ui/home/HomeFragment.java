@@ -232,8 +232,7 @@ public class HomeFragment extends Fragment {
                         for (DocumentSnapshot doc : task.getResult().getDocuments()) {
                             ViewAllModel viewAllModel = doc.toObject(ViewAllModel.class);
                             if (viewAllModel != null) {
-                                String animalId = doc.getId(); // Ovo je ID iz AllAnimals
-                                // Sada trebamo pronaći podatke o udomljavanju iz AnimalsForAdoption
+                                String animalId = doc.getId();
                                 fetchAdoptionDetails(animalId, viewAllModel, resultList);
                             }
                         }
@@ -250,13 +249,11 @@ public class HomeFragment extends Fragment {
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()) {
                         for (DocumentSnapshot adoptionDoc : queryDocumentSnapshots) {
-                            // Pretpostavimo da je svaka životinja jedinstvena, stoga uzimamo prvi dokument
-                            viewAllModel.setDocumentId(adoptionDoc.getId()); // Postavljamo documentId iz AnimalsForAdoption
+                            viewAllModel.setDocumentId(adoptionDoc.getId());
                             viewAllModel.setAdopted(adoptionDoc.getBoolean("adopted"));
                             String adopterId = adoptionDoc.getString("adopterId");
                             viewAllModel.setAdopterId(adopterId);
 
-                            // Dobavimo ime udomitelja ako je potrebno
                             if (adopterId != null && !adopterId.isEmpty()) {
                                 fetchAdopterName(adopterId, viewAllModel);
                             } else {
@@ -266,7 +263,6 @@ public class HomeFragment extends Fragment {
                         listToUpdate.add(viewAllModel);
                         updateRecyclerView(listToUpdate);
                     } else {
-                        // Nema zapisa o udomljavanju, postavimo status na 'nije udomljeno'
                         viewAllModel.setAdopted(false);
                         viewAllModel.setAdopterName("Nepoznato");
                         listToUpdate.add(viewAllModel);
@@ -308,7 +304,7 @@ public class HomeFragment extends Fragment {
                 viewAllAdapter.notifyItemChanged(index);
             } else {
                 Log.d(TAG, "Updated model not found in viewAllModelList. Updating entire dataset.");
-                viewAllAdapter.notifyDataSetChanged(); // Fallback to update entire dataset
+                viewAllAdapter.notifyDataSetChanged();
             }
         });
     }

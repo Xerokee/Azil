@@ -24,9 +24,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyOrdersFragment extends Fragment {
+public class MyAdoptedFragment extends Fragment {
 
-    public MyOrdersFragment() {
+    public MyAdoptedFragment() {
         // Required empty public constructor
     }
 
@@ -41,7 +41,7 @@ public class MyOrdersFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_my_orders, container, false);
+        View root = inflater.inflate(R.layout.fragment_my_adopted, container, false);
 
         newAnimalsTextView = root.findViewById(R.id.new_animals_textview);
         newAnimalsImageView = root.findViewById(R.id.new_animals_img);
@@ -67,10 +67,6 @@ public class MyOrdersFragment extends Fragment {
                     searchAdoptersByName(s.toString());
                 }
             }
-
-
-
-
             @Override
             public void afterTextChanged(Editable s) {}
         });
@@ -91,7 +87,7 @@ public class MyOrdersFragment extends Fragment {
                         }
                     }
                     adapter.notifyDataSetChanged();
-                    updateUIBasedOnSearchResults(); // Ažuriranje UI nakon ponovnog učitavanja liste
+                    updateUIBasedOnSearchResults();
 
                     if (adoptedAnimalsList.isEmpty()) {
                         newAnimalsTextView.setVisibility(View.VISIBLE);

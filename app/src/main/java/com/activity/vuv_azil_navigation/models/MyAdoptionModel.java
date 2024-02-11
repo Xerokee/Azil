@@ -2,7 +2,7 @@ package com.activity.vuv_azil_navigation.models;
 
 import java.util.UUID;
 
-public class MyCartModel {
+public class MyAdoptionModel {
 
     String animalName;
     String animalType;
@@ -14,10 +14,10 @@ public class MyCartModel {
     private String adopterId;
     private String adopterName;
 
-    public MyCartModel() {
+    public MyAdoptionModel() {
     }
 
-    public MyCartModel(String animalName, String animalType, String currentDate, String currentTime, String img_url) {
+    public MyAdoptionModel(String animalName, String animalType, String currentDate, String currentTime, String img_url) {
         this.animalName = animalName;
         this.animalType = animalType;
         this.currentDate = currentDate;

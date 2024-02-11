@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.vuv_azil_navigation.R;
 import com.activity.vuv_azil_navigation.models.AnimalModel;
-import com.activity.vuv_azil_navigation.models.MyCartModel;
 import com.activity.vuv_azil_navigation.models.UserModel;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,9 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Transaction;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnimalsAdapter.ViewHolder> {
     private Context context;
@@ -91,7 +88,7 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
             animalImage = itemView.findViewById(R.id.imageViewAnimal);
             tvAdoptedStatus = itemView.findViewById(R.id.tvAdoptedStatus);
             adopterName = itemView.findViewById(R.id.textViewAdopterName);
-            returnButton = itemView.findViewById(R.id.returnButton); // Dodajemo gumb za vraćanje
+            returnButton = itemView.findViewById(R.id.returnButton);
         }
     }
 
@@ -104,9 +101,9 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
                         if (task.isSuccessful() && task.getResult() != null) {
                             DocumentSnapshot document = task.getResult();
                             if (document.exists() && Boolean.TRUE.equals(document.getBoolean("isAdmin"))) {
-                                onAdminAction.run(); // If user is admin, perform the admin action
+                                onAdminAction.run();
                             } else {
-                                showAdminOnlyDialog(); // If user is not admin, show admin only dialog
+                                showAdminOnlyDialog();
                             }
                         } else {
                             Toast.makeText(context, "Greška pri provjeri statusa admina", Toast.LENGTH_SHORT).show();
@@ -170,8 +167,8 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
             }
             return null;
         }).addOnSuccessListener(aVoid -> {
-            adoptedAnimalsList.remove(position); // Uklanja element iz liste
-            notifyItemRemoved(position); // Obavještava adapter o promjeni
+            adoptedAnimalsList.remove(position);
+            notifyItemRemoved(position);
             Toast.makeText(context, "Životinja je vraćena u azil", Toast.LENGTH_SHORT).show();
         }).addOnFailureListener(e -> {
             Log.e("ReturnAnimal", "Failed to return animal with ID: " + documentId, e);

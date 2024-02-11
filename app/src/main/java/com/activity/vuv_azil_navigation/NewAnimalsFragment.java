@@ -11,29 +11,27 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
 
-import com.activity.vuv_azil_navigation.R;
 import com.activity.vuv_azil_navigation.models.ViewAllModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class NewProductsFragment extends Fragment {
+public class NewAnimalsFragment extends Fragment {
 
     private EditText etName, etDescription, etRating, etImgUrl, etType;
     private FloatingActionButton btnAddAnimal;
     private LinearLayout animalFormContainer;
     private FloatingActionButton fabAddAnimal;
 
-    public NewProductsFragment() {
+    public NewAnimalsFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_new_products, container, false);
+        View root = inflater.inflate(R.layout.fragment_new_animals, container, false);
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = auth.getCurrentUser();

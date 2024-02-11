@@ -23,17 +23,17 @@
         tools:layout="@layout/fragment_category" />
     <fragment
         android:id="@+id/nav_new_products"
-        android:name="com.activity.vuv_azil_navigation.NewProductsFragment"
+        android:name="com.activity.vuv_azil_navigation.NewAnimalsFragment"
         android:label="Nove Životinje"
-        tools:layout="@layout/fragment_new_products" />
+        tools:layout="@layout/fragment_new_animals" />
     <fragment
         android:id="@+id/nav_my_orders"
-        android:name="com.activity.vuv_azil_navigation.MyOrdersFragment"
+        android:name="com.activity.vuv_azil_navigation.MyAdoptedFragment"
         android:label="Sklonište"
-        tools:layout="@layout/fragment_my_orders" />
+        tools:layout="@layout/fragment_my_adopted" />
     <fragment
         android:id="@+id/nav_my_carts"
-        android:name="com.activity.vuv_azil_navigation.MyCartsFragment"
+        android:name="com.activity.vuv_azil_navigation.MyAnimalsFragment"
         android:label="Lista Životinja"
-        tools:layout="@layout/fragment_my_carts" />
+        tools:layout="@layout/fragment_my_adoptions" />
 </navigation>

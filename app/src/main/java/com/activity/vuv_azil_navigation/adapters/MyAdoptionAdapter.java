@@ -2,7 +2,6 @@ package com.activity.vuv_azil_navigation.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,30 +17,27 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.vuv_azil_navigation.R;
-import com.activity.vuv_azil_navigation.models.MyCartModel;
+import com.activity.vuv_azil_navigation.models.MyAdoptionModel;
 import com.activity.vuv_azil_navigation.models.UserModel;
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder> {
+public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.ViewHolder> {
 
     Context context;
-    List<MyCartModel> cartModelList;
+    List<MyAdoptionModel> cartModelList;
     FirebaseFirestore firestore;
     FirebaseAuth auth;
 
-    public MyCartAdapter(Context context, List<MyCartModel> cartModelList) {
+    public MyAdoptionAdapter(Context context, List<MyAdoptionModel> cartModelList) {
         this.context = context;
         this.cartModelList = cartModelList;
         firestore = FirebaseFirestore.getInstance();
@@ -51,13 +47,13 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_cart_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_animal_item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        MyCartModel cartModel = cartModelList.get(position);
+        MyAdoptionModel cartModel = cartModelList.get(position);
 
         if (cartModel.getimg_url() != null && !cartModel.getimg_url().isEmpty()) {
             Glide.with(context).load(cartModel.getimg_url()).into(holder.img_url);
@@ -90,7 +86,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
             holder.adoptButton.setOnClickListener(view -> {
                 int adapterPosition = holder.getAdapterPosition();
                 if (adapterPosition != RecyclerView.NO_POSITION) {
-                    MyCartModel selectedAnimal = cartModelList.get(adapterPosition);
+                    MyAdoptionModel selectedAnimal = cartModelList.get(adapterPosition);
                     if (!selectedAnimal.isAdopted()) {
                         checkIfUserIsAdmin(selectedAnimal, adapterPosition);
                     } else {
@@ -157,7 +153,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
         EditText edtTime = view.findViewById(R.id.edt_updated_time);
         EditText edtimg_url = view.findViewById(R.id.edt_updated_img_url);
 
-        MyCartModel cartModel = cartModelList.get(position);
+        MyAdoptionModel cartModel = cartModelList.get(position);
         edtName.setText(cartModel.getAnimalName());
         edtType.setText(cartModel.getAnimalType());
         edtDate.setText(cartModel.getCurrentDate());
@@ -184,7 +180,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
     }
 
     private void updateFirestoreDocument(int position, String updatedName, String updatedType, String updatedDate, String updatedTime, String updatedimg_url) {
-        MyCartModel cartModel = cartModelList.get(position);
+        MyAdoptionModel cartModel = cartModelList.get(position);
 
         Map<String, Object> updateData = new HashMap<>();
         updateData.put("animalName", updatedName);
@@ -211,7 +207,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
                 });
     }
 
-    private void checkIfUserIsAdmin(final MyCartModel selectedAnimal, final int adapterPosition) {
+    private void checkIfUserIsAdmin(final MyAdoptionModel selectedAnimal, final int adapterPosition) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             firestore.collection("Korisnici").document(user.getUid())
@@ -241,7 +237,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.ViewHolder
         void onAdminChecked(boolean isAdmin);
     }
 
-    private void showAdoptionDialog(MyCartModel selectedAnimal, int position) {
+    private void showAdoptionDialog(MyAdoptionModel selectedAnimal, int position) {
         firestore.collection("Korisnici").whereEqualTo("isAdmin", false)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
