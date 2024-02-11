@@ -37,13 +37,11 @@ public class MyAnimalsFragment extends Fragment {
     List<MyAdoptionModel> cartModelList;
 
     public MyAnimalsFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_my_adoptions, container, false);
 
         db = FirebaseFirestore.getInstance();
@@ -57,26 +55,24 @@ public class MyAnimalsFragment extends Fragment {
         cartAdapter = new MyAdoptionAdapter(getActivity(),cartModelList);
         recyclerView.setAdapter(cartAdapter);
 
-        db.collection("AnimalsForAdoption") // Remove the UID constraint
+        db.collection("AnimalsForAdoption")
                 .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            cartModelList.clear(); // Clear the list before adding items
+                            cartModelList.clear();
                             for (DocumentSnapshot documentSnapshot : task.getResult().getDocuments()) {
                                 String animalId = documentSnapshot.getId();
                                 MyAdoptionModel cartModel = documentSnapshot.toObject(MyAdoptionModel.class);
                                 cartModel.setAnimalId(animalId);
                                 cartModelList.add(cartModel);
 
-                                // Log the content of each cartModel
                                 Log.d("MyCartsFragment", "CartModel: " + cartModel.getAnimalName() + ", " + cartModel.getAnimalType() + ", " + cartModel.getCurrentDate() + ", " + cartModel.getCurrentTime() + ", " + cartModel.getAnimalId());
                             }
                             Log.d("MyCartsFragment", "Number of items: " + cartModelList.size());
                             cartAdapter.notifyDataSetChanged();
                             recyclerView.setVisibility(View.VISIBLE);
                         } else {
-                            // Log the error
                             Log.e("MyCartsFragment", "Error fetching documents: ", task.getException());
                             Toast.makeText(getActivity(), "Greška: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }

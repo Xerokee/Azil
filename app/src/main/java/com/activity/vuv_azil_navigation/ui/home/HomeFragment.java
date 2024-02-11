@@ -46,21 +46,17 @@ public class HomeFragment extends Fragment {
     RecyclerView popularRec, homeCatRec, recommendedRec;
     FirebaseFirestore db;
 
-    // Popularne Životinje
     List<PopularModel> popularModelList;
     PopularAdapter popularAdapters;
 
-    // Search view
     EditText search_box;
     private List<ViewAllModel> viewAllModelList;
     private RecyclerView recyclerViewSearch;
     private ViewAllAdapter viewAllAdapter;
 
-    // Početna Kategorija
     List<HomeCategory> categoryList;
     HomeAdapter homeAdapter;
 
-    // Predložene Životinje
     List<RecommendedModel> recommendedModelList;
     RecommendedAdapter recommendedAdapter;
 
@@ -78,7 +74,6 @@ public class HomeFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         scrollView.setVisibility(View.GONE);
 
-        // Popularne životinje
         popularRec.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
         popularModelList = new ArrayList<>();
         popularAdapters = new PopularAdapter(getActivity(), popularModelList);
@@ -104,7 +99,6 @@ public class HomeFragment extends Fragment {
                     }
                 });
 
-        // Početna Kategorija
         homeCatRec.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
         categoryList = new ArrayList<>();
         homeAdapter = new HomeAdapter(getActivity(), categoryList);
@@ -127,7 +121,6 @@ public class HomeFragment extends Fragment {
                     }
                 });
 
-        // Predložene Životinje
         recommendedRec.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
         recommendedModelList = new ArrayList<>();
         recommendedAdapter = new RecommendedAdapter(getActivity(), recommendedModelList);
@@ -150,7 +143,6 @@ public class HomeFragment extends Fragment {
                     }
                 });
 
-        // Search view
         recyclerViewSearch = root.findViewById(R.id.search_rec);
         search_box = root.findViewById(R.id.search_box);
         viewAllModelList = new ArrayList<>();
@@ -218,7 +210,6 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    // Pretraga životinja i postavljanje imena udomitelja
     private void searchAnimal(String keyword) {
         Log.d("HomeFragment", "Searching for: " + keyword);
         db.collection("AllAnimals")

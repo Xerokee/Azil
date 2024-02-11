@@ -21,7 +21,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 public class NewAnimalsFragment extends Fragment {
 
     private EditText etName, etDescription, etRating, etImgUrl, etType;
-    private FloatingActionButton btnAddAnimal;
     private LinearLayout animalFormContainer;
     private FloatingActionButton fabAddAnimal;
 
@@ -41,19 +40,15 @@ public class NewAnimalsFragment extends Fragment {
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists() && Boolean.TRUE.equals(documentSnapshot.getBoolean("isAdmin"))) {
-                            // Ako je korisnik admin, prikaži UI za dodavanje novih životinja
                             fabAddAnimal.setVisibility(View.VISIBLE);
                         } else {
-                            // Ako korisnik nije admin, sakrij UI
                             fabAddAnimal.setVisibility(View.GONE);
                         }
                     })
                     .addOnFailureListener(e -> {
-                        // Obrada greške
                         Log.e("NewProductsFragment", "Error getting user admin status", e);
                     });
         } else {
-            // Korisnik nije prijavljen
             fabAddAnimal.setVisibility(View.GONE);
         }
 
@@ -105,7 +100,7 @@ public class NewAnimalsFragment extends Fragment {
             }
 
             try {
-                Float.parseFloat(rating); // Provjerite je li ocjena valjan broj
+                Float.parseFloat(rating);
             } catch (NumberFormatException e) {
                 Log.e("NewProductsFragment", "Greška pri provjeri ocjene: " + e.getMessage());
                 Toast.makeText(getContext(), "Ocjena mora biti broj", Toast.LENGTH_SHORT).show();

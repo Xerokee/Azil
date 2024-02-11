@@ -44,7 +44,6 @@ public class ViewAllActivity extends AppCompatActivity {
         viewAllAdapter = new ViewAllAdapter(this,viewAllModelList);
         recyclerView.setAdapter(viewAllAdapter);
 
-        // Dohvati Pse
         if(type != null && type.equalsIgnoreCase("pas")) {
             firestore.collection("AllAnimals").whereEqualTo("type", "pas").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
@@ -59,7 +58,6 @@ public class ViewAllActivity extends AppCompatActivity {
             });
         }
 
-        // Dohvati Mačke
         if(type != null && type.equalsIgnoreCase("mačka")) {
             firestore.collection("AllAnimals").whereEqualTo("type", "mačka").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override

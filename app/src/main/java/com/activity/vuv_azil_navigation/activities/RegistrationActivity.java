@@ -102,13 +102,10 @@ public class RegistrationActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         progressBar.setVisibility(View.GONE);
                         if (task.isSuccessful()) {
-                            // Stvaramo novi UserModel objekt
                             UserModel userModel = new UserModel(userName, userEmail, userPassword, false);
 
-                            // Dohvaćamo ID autentificiranog korisnika
                             String id = task.getResult().getUser().getUid();
 
-                            // Spremamo korisnika u Firestore
                             FirebaseFirestore.getInstance().collection("Korisnici").document(id)
                                     .set(userModel)
                                     .addOnSuccessListener(unused -> {
