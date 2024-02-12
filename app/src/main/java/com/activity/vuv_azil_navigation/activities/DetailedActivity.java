@@ -46,8 +46,6 @@ public class DetailedActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailed);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
